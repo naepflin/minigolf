@@ -1,7 +1,3 @@
-//The MIT License (MIT) - See Licence.txt for details
-
-//Copyright (c) 2013 Mick Grierson, Matthew Yee-King, Marco Gillies
-
 
 import org.jbox2d.util.nonconvex.*;
 import org.jbox2d.dynamics.contacts.*;
@@ -18,7 +14,7 @@ import org.jbox2d.dynamics.*;
 Maxim maxim;
 AudioPlayer[] crateSounds;
 
-int howManyElements = 200;
+int howManyElements = 20;
 int whichSoundLooper = 0;
 
 
@@ -27,13 +23,15 @@ Physics physics; // The physics handler: we'll see more of this later
 
 Body[] block = new Body[0];
 
-Body bat;
-
 Body[] sand;
 
 
 
 float[] angles;
+float mousedir = 0;
+
+PVector [] mouseVecHistory;
+PVector mouseVec;
 
 
 // a handler that will detect collisions
@@ -51,7 +49,6 @@ void setup() {
   size(520, 800);
   //size(520, 500);
   frameRate(60);
-
   imageMode(CENTER);
 
   //initScene();
@@ -75,11 +72,18 @@ void setup() {
   // (currently broken in JS)
   physics.setCustomRenderingMethod(this, "myCustomRenderer");
 
+
   angles = new float[10];
   for (int i=0;i<angles.length;i++)
   {
     angles[i]=0;
   }
+  mouseVecHistory = new PVector[10];
+  for (int i=0;i<mouseVecHistory.length;i++)
+  {
+    mouseVecHistory[i]= new PVector(1,1);
+  }
+  mouseVec = new PVector(1,1);
 
 
   // sets up the collision callbacks
@@ -95,17 +99,11 @@ void setup() {
   }
 
 
-  physics.setDensity(1.0);
-  bat = physics.createRect(200, 200, 205, 220);
-  bat.setLinearDamping(50);
-  bat.setAngularDamping(15);
-
 
   accel = new Accelerometer();
 
-  fill(0);
 
-
+// init sounds
   maxim = new Maxim(this);
   // now an array of crate sounds
   crateSounds = new AudioPlayer[howManyElements];
@@ -120,9 +118,6 @@ void setup() {
 
 void buildLabyrinth() {
   physics.setDensity(0);
-
-
-
 
   // delete the block objects from the world
   for (i = 0; i < block.length; i++) {
@@ -160,28 +155,31 @@ void draw() {
   }
 
 
-  Vec2 batPos = physics.worldToScreen(bat.getWorldCenter());
-  Vec2 impulse = new Vec2((mouseX-batPos.x)/100, (mouseY-batPos.y)/100);
-  bat.applyImpulse(impulse, bat.getWorldCenter());
-  
-  if(mouseY - pmouseY != 0 || mouseX - pmouseX != 0) {
-    float mousedir = atan2(mouseY - pmouseY,mouseX - pmouseX);
-    float batdir = bat.getAngle();
-    float torque = (mousedir-batdir);
-   
 
-    torque = torque / 100; // adjustment speed
-    bat.applyTorque(torque);
-    println(batdir);
+   
+  //mouse direction calculation with buffer: Take average of previous angles
+  if(mouseY - pmouseY != 0 || mouseX - pmouseX != 0) {
+    mousedir = 0;
+    angles[angles.length-1] = atan2(mouseY - pmouseY,mouseX - pmouseX);    
+    for (int i=0;i<(angles.length-1);i++)
+    {
+      angles[i] = angles[i+1];
+      mousedir += angles[i];
+    }
+    mousedir = (mousedir + angles[angles.length-1]) / angles.length;
+
+    
+    //mouse direction calculation with buffer based on vectors
+    mouseVecHistory = append(mouseVecHistory, new PVector(mouseY - pmouseY,mouseX - pmouseX));
+    mouseVecHistory = reverse(shorten(reverse(mouseVecHistory)));
+
+    mouseVec.set(0, 0);
+    for (i = 0; i < mouseVecHistory.length; i++) {
+      mouseVec.add(mouseVecHistory[i]);
+    }
+    
+
   }
-  
-  
-  mousedir = 0;
-  for (int i=0;i<angles.length;i++)
-  {
-    mousedir += angles[i];
-  }
-  mousedir = mousedir / angles.length;
   
   pushMatrix();
   translate(mouseX, mouseY);
@@ -191,23 +189,30 @@ void draw() {
   popMatrix();
 
 
-  
+ 
   pushMatrix();
   translate(width/2, height/2);
   rotate(mousedir);
   stroke(255,0,0);
   line(0,0,100,0);
   popMatrix();
+
+  PVector stdvec = PVector.normalize(mouseVec);
   
   pushMatrix();
   translate(width/2, height/2);
-  rotate(batdir);
   stroke(0,255,0);
-  line(0,0,100,0);
+  line(0,0,stdvec.y*100,stdvec.x*100);
+  popMatrix(); 
+  
+  pushMatrix();
+  translate(mouseX, mouseY);
+  rotate(atan(stdvec.x/stdvec.y));
+  fill(0,255,0);
+  rect(-2.5, -10, 5, 20);
   popMatrix();
-  
-  
-  
+
+
 }
 
 // on iOS, the first audio playback has to be triggered directly by a user interaction
@@ -282,17 +287,7 @@ void myCustomRenderer(World world) {
     popMatrix();
   }
 
-  Vec2 worldCenter = bat.getWorldCenter();
-  float angle = bat.getAngle();
-  Vec2 batPos = physics.worldToScreen(worldCenter);
-  pushMatrix();
-  translate(batPos.x, batPos.y);
-  rotate(angle);
 
-  // Minimalist bat graphics:
-  fill(255);
-  rect(-2.5, -10, 5, 20);
-  popMatrix();
 }
 
 void keyPressed() {
@@ -325,9 +320,6 @@ void keyPressed() {
     for (var i = 0; i < sand.length; i++) {
       sand[i].applyImpulse(impulse, sand[i].getWorldCenter());
     }
-  }
-  if (key == 'r') {
-    bat.applyTorque(.01);
   }
 }
 
