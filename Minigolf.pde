@@ -14,7 +14,7 @@ import org.jbox2d.dynamics.*;
 Maxim maxim;
 AudioPlayer[] crateSounds;
 
-int howManyElements = 20;
+int howManyElements = 1;
 int whichSoundLooper = 0;
 float ballRadius = 5;
 
@@ -35,6 +35,8 @@ PVector mouseVec;
 
 PVector hole;
 
+int counter = 0;
+
 
 // a handler that will detect collisions
 CollisionDetector detector; 
@@ -45,6 +47,34 @@ CollisionDetector detector;
 // this is used to remember that the user 
 // has triggered the audio on iOS... see mousePressed below
 boolean userHasTriggeredAudio = false;
+
+
+
+// define levels
+  
+boolean levelRunning = false;
+
+int currentLevel = 0;
+
+//"hole in one" level
+String level1 = "XXXXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXX\nXXXXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXX\nXXXXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXX\nXXXXXX       XXX X XXXXXXXXXXXXXXXXXX\nXXXXXX XXXXX XXX X XXXXXXXXXXXXXXXXXX\nXXXXXX XXXXX     X X           XXXXXX\nXXXXXX XXXXXXXXXXX XXXXXXXX XXXXXXXXX\nXXXXXX XXXXXXXXXXX XXXXXXXX XXXXXXXX\nXXX              X X   XXXX XXXXXXX\nXXX XXXX XXXXXXXXX XXXXXXXX    XXXXX\nXXX   XX XXXXXXXXX XX  XXXXXXX XXXXXX\nXXXXX XX         X XX         XXXXXX\nXXXXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXX";
+
+//"smiley" level
+String level2 = "XXXXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXX\n                                     \n                                     \n                                     \n                                     \n                                     \n             X         X             \n                                     \n                                     \n                                     \n                                     \n           XX           XX           \n            XX         XX            \n             XXXXXXXXXXX             \n                                     \n                                     \n                                     ";
+
+//"labyrinth one" level
+String level3 = "XXXXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXX\n                                     \n                                     \n                                     \n                                     \n                                     \n     XXXXXXXXX         XXXXXXXXXXXXXX\n     X       X         X             \n     X       X         X             \n     X       X         X             \n     X       X         X             \n     X       X         X             \n     X       X         X             \n     X       XXXXXXXXXXX             \n                                     \n                                     \nXXXXXXXXXXXXX                        ";
+
+//"labyrinth two" level
+String level4 = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX   \n        X                            \n        X                            \n        X   XXXXXXXXXXXXXXXXXXXXXXXXX\n                                     \n                                     \n     XXXXXXXXX    X    XXXXXXXXXXXXXX\n     X       X    X    X             \n     X       X    X    X             \n     X       X    X                 \n     X       X    X    X             \n     X       X    X    X             \n     X       X    X    X             \n     X       XXXXXXXXXXX             \n             X                       \n             X                       \nXXXXXXXXXXXXXX                       ";
+
+//"labyrinth three" level
+String level5 = "XXXXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXX\nXXXXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXX\nXXXXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXX\nXXXXXX       XXX   XXXXXXXXXXXXXXXXXX\nXXXXXX XXXXX XXX X XXXXXXXXXXXXXXXXXX\nXXXXXX XXXXX     X             XXXXXX\nXXXXXX XXXXXXXXXXXXXXXXXXXX XXXXXXXXX\nXXXXXX XXXXXXXXXXX XXXXXXXX XXXXXXXX\nXXX                    XXXX XXXXXXX\nXXX XXXX XXXXXXXXX XXXXXXXX    XXXXX\nXXX   XX XXXXXXXXX XX  XXXXXXX XXXXXX\nXXXXX XX         X XX         XXXXXX\nXXXXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXX";
+
+String[] levels = {level1, level2, level3, level4, level5};
+
+
+
 
 
 void setup() {
@@ -87,7 +117,7 @@ void setup() {
   }
   mouseVec = new PVector(1, 1);
 
-  hole = new PVector(width/2, height/3);
+  hole = new PVector(width/2, height/5);
 
   // sets up the collision callbacks
   // detector = new CollisionDetector (physics, this);
@@ -101,7 +131,7 @@ void setup() {
     balls[i] = physics.createCircle(random(2, width-2), random(2, height-2), ballRadius);
     balls[i].SetLinearDamping(1.2);
   }
-
+  
 
   // accelerometer
   accel = new Accelerometer();
@@ -120,16 +150,53 @@ void setup() {
   detector = new CollisionDetector (physics, this);
 }
 
-void buildLabyrinth() {
+void buildLevel() {
+  
+  // set density to 0 i.e. fixed physical element
   physics.setDensity(0);
-
   // delete the block objects from the world
   for (i = 0; i < block.length; i++) {
     physics.getWorld().DestroyBody(block[i]);
   }
-
   // empty the block array
   block.length = 0;
+
+
+
+  // build the new level
+  // check that the level is still OK 
+  if (currentLevel >= levels.length)
+  {
+      println("dasde");
+
+    currentLevel = 0;
+  }
+  
+  String labyrinthString = levels[currentLevel];
+  Array labyrinthArray = split(labyrinthString, "\n");
+
+  var yResolution = labyrinthArray.length; // how many rows does the labyrinth have?
+
+  var xResolution = 0;
+  for (i = 0; i < yResolution; i++) { // how many columns does the labyrinth have?
+    if (labyrinthArray[i].length > xResolution) {
+      xResolution = labyrinthArray[i].length;
+    }
+  }
+
+
+  for (i = 0; i < yResolution; i++) {
+    for (j = 0; j < xResolution; j++) {
+      if (labyrinthArray[i].charAt(j) == "X") {
+        var topleftX = j * width / xResolution;
+        var topleftY = height/8 + i * height *6/8 / yResolution;
+        var bottomrightX = (j+1) * width / xResolution;
+        var bottomrightY = height/8 + (i+1) * height *6/8 / yResolution;
+        block = append(block, physics.createRect(topleftX-1, topleftY-1, bottomrightX+1, bottomrightY+1));
+      }
+    }
+  }
+
 }
 
 
@@ -193,8 +260,8 @@ void draw() {
       /*checkIfTouched(ballPos.x, ballPos.y);*/
     }
 
-    if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= ballRadius * 2  && speed <= .8) {
-      println("Won  " + speed);
+    if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= ballRadius * 2  && speed <= 1.5) {
+      //println("Won  " + speed);
       physics.getWorld().DestroyBody(balls[i]);
       balls = concat(subset(balls,0,i), subset(balls,i+1,balls.length));
     }
@@ -203,6 +270,7 @@ void draw() {
     {
       Vec2 impulse = new Vec2(mouseVec.y*.0002*sq(ballRadius), mouseVec.x*.0002*sq(ballRadius));
       balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
+      counter++;
     }
 
     // draw balls
@@ -228,17 +296,25 @@ void draw() {
      
     popMatrix();
   }
+  
+  fill(255);
+  textSize(32);
+  textAlign(RIGHT);
+  PFont mono;
+  mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
+  textFont(mono);
+  text(counter, width-20, 40);
 }
 
 // on iOS, the first audio playback has to be triggered directly by a user interaction
 void mouseReleased() {
   if (!userHasTriggeredAudio) {
-    for (int i=0;i<howManyElements;i++) {
+    /*for (int i=0;i<howManyElements;i++) {
       crateSounds[i].volume(0);
       crateSounds[i].play();
-    }
+    }*/
     userHasTriggeredAudio = true;
-    buildLabyrinth();
+    buildLevel();
     resetBallPosition();
   }
   if (!levelRunning) {
@@ -282,7 +358,7 @@ void startNextLevel() {
 
   // to do: maybe display the labyrinth after completing
 
-  buildLabyrinth();
+  buildLevel();
   resetBallPosition();
 
   currentLevel++;
@@ -351,10 +427,6 @@ void collision(Body b1, Body b2, float impulse)
 }
 
 void resetBallPosition() {
-  for (var i = 0; i < howManyElements; i++) {
-    Vec2 newPosition = new Vec2(random(2, width-2), random(2, height-2));
-    newPosition = physics.screenToWorld(newPosition);
-    balls[i].setPosition(newPosition);
-  }
+
 }
 
