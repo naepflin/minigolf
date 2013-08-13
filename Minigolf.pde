@@ -23,7 +23,7 @@ Physics physics; // The physics handler: we'll see more of this later
 
 Body[] block = new Body[0];
 
-Body[] sand;
+Body[] balls;
 
 
 
@@ -32,6 +32,8 @@ float mousedir = 0;
 
 PVector [] mouseVecHistory;
 PVector mouseVec;
+
+PVector hole;
 
 
 // a handler that will detect collisions
@@ -81,29 +83,31 @@ void setup() {
   mouseVecHistory = new PVector[10];
   for (int i=0;i<mouseVecHistory.length;i++)
   {
-    mouseVecHistory[i]= new PVector(1,1);
+    mouseVecHistory[i]= new PVector(1, 1);
   }
-  mouseVec = new PVector(1,1);
+  mouseVec = new PVector(1, 1);
 
+  hole = new PVector(width/2, height/3);
 
   // sets up the collision callbacks
   // detector = new CollisionDetector (physics, this);
 
-  //init the particles:  
+
+  //init the ball:
   physics.setDensity(10.0);
-  sand = new Body[howManyElements];
+  balls = new Body[howManyElements];
 
   for (var i = 0; i < howManyElements; i++) {
-    sand[i] = physics.createCircle(random(2, width-2), random(2, height-2), 2);
-    sand[i].SetLinearDamping(.2);
+    balls[i] = physics.createCircle(random(2, width-2), random(2, height-2), 2);
+    balls[i].SetLinearDamping(1.2);
   }
 
 
-
+  // accelerometer
   accel = new Accelerometer();
 
 
-// init sounds
+  // init sounds
   maxim = new Maxim(this);
   // now an array of crate sounds
   crateSounds = new AudioPlayer[howManyElements];
@@ -112,7 +116,7 @@ void setup() {
     crateSounds[i].setLooping(false);
   }
 
-  // sets up the collision callbacks
+  // collision callbacks
   detector = new CollisionDetector (physics, this);
 }
 
@@ -131,145 +135,80 @@ void buildLabyrinth() {
 
 
 void draw() {
+  // draw backgrounds
   noStroke();
-
   if (!userHasTriggeredAudio) {
-    //start dialog
+    // draw startup dialog
     fill(0, 0, 120);
     rect(0, 0, width, height);
     fill(255);
     textSize(32);
     textAlign(CENTER);
-
     PFont mono;
     mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
     textFont(mono);
-
     text("Tap to start", width/2, height/2);
   }
   else {
-    //labyrinth area
-    var alpha = 255;
+    // draw main background
+    int alpha = 255;
     fill(0, alpha);
-    background(40);
+    background(0,100,0);
   }
 
 
 
-   
-  //mouse direction calculation with buffer: Take average of previous angles
-  if(mouseY - pmouseY != 0 || mouseX - pmouseX != 0) {
-    mousedir = 0;
-    angles[angles.length-1] = atan2(mouseY - pmouseY,mouseX - pmouseX);    
-    for (int i=0;i<(angles.length-1);i++)
-    {
-      angles[i] = angles[i+1];
-      mousedir += angles[i];
-    }
-    mousedir = (mousedir + angles[angles.length-1]) / angles.length;
-
-    
-    //mouse direction calculation with buffer based on vectors
-    mouseVecHistory = append(mouseVecHistory, new PVector(mouseY - pmouseY,mouseX - pmouseX));
+  // calculate mouse direction with a buffer based on vectors (average of recent mouse motions)
+  if (mouseY - pmouseY != 0 || mouseX - pmouseX != 0) {
+    mouseVecHistory = append(mouseVecHistory, new PVector(mouseY - pmouseY, mouseX - pmouseX));
     mouseVecHistory = reverse(shorten(reverse(mouseVecHistory)));
-
     mouseVec.set(0, 0);
     for (i = 0; i < mouseVecHistory.length; i++) {
       mouseVec.add(mouseVecHistory[i]);
     }
-    
-
   }
-  
-  pushMatrix();
-  translate(mouseX, mouseY);
-  rotate(mousedir);
-  fill(255,0,0);
-  rect(-2.5, -10, 5, 20);
-  popMatrix();
 
 
- 
-  pushMatrix();
+  // draw helper line to visualize mouse direction (debug)
+  /*pushMatrix();
   translate(width/2, height/2);
-  rotate(mousedir);
-  stroke(255,0,0);
-  line(0,0,100,0);
-  popMatrix();
-
-  PVector stdvec = PVector.normalize(mouseVec);
-  
-  pushMatrix();
-  translate(width/2, height/2);
-  stroke(0,255,0);
-  line(0,0,stdvec.y*100,stdvec.x*100);
+  stroke(0, 255, 0);
+  line(0, 0, mouseVec.y, mouseVec.x);
   popMatrix(); 
-  
+  noStroke();*/
+
+  // draw hole
   pushMatrix();
-  translate(mouseX, mouseY);
-  rotate(atan(stdvec.x/stdvec.y));
-  fill(0,255,0);
-  rect(-2.5, -10, 5, 20);
+  translate(hole.x, hole.y);
+  fill(0);
+  ellipse(0, 0, 10, 10);
   popMatrix();
 
+  // ball-specific code:
+  for (i = 0; i < balls.length; i++) {
+    Vec2 ballPos = physics.worldToScreen(balls[i].getWorldCenter());
+    float speed = sqrt(abs((balls[i].getLinearVelocity().x) + sq(balls[i].getLinearVelocity().y)));
 
-}
-
-// on iOS, the first audio playback has to be triggered directly by a user interaction
-void mouseReleased() {
-  if (!userHasTriggeredAudio) {
-    for (int i=0;i<howManyElements;i++) {
-      crateSounds[i].volume(0);
-      crateSounds[i].play();
+    if (mouseY - pmouseY != 0 || mouseX - pmouseX != 0) {
+      /*checkIfTouched(ballPos.x, ballPos.y);*/
     }
-    userHasTriggeredAudio = true;
-    buildLabyrinth();
-    resetSandPosition();
-  }
-  if (!levelRunning) {
-    startNextLevel();
-  }
-}
 
+    if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= 5 && speed <= .8) {
+      println("Won  " + speed);
+    }
 
-void startNextLevel() {
-  levelRunning = true;
+    if (dist(mouseX, mouseY, ballPos.x, ballPos.y) <= 20 && speed <= .15)
+    {
+      Vec2 impulse = new Vec2(mouseVec.y*.001, mouseVec.x*.001);
+      balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
+    }
 
-  // to do: maybe display the labyrinth after completing
-
-  buildLabyrinth();
-  resetSandPosition();
-
-  currentLevel++;
-}
-
-
-void myCustomRenderer(World world) {
-  // Accelerometer visualization
-  //stroke(0);
-  //strokeWeight(1);
-  //line(width/2, height/2, width/2 + 20 * accel.getX(), height/2 - 20 * accel.getY());
-  //println(frameRate);
-  // Accelerometer impulse
-  Vec2 impulse = new Vec2(.001*accel.getX(), -.001*accel.getY());
-  for (var i = 0; i < sand.length; i++) {
-    sand[i].applyImpulse(impulse, sand[i].getWorldCenter());
-  }
-
-
-  noStroke();
-  fill(255);
-  for (int i = 0; i < sand.length; i++)
-  {
-    Vec2 worldCenter = sand[i].getWorldCenter();
-    Vec2 sandPos = physics.worldToScreen(worldCenter);
+    // draw balls
     pushMatrix();
-    translate(sandPos.x, sandPos.y);
-
+    translate(ballPos.x, ballPos.y);
     // Minimalist ball graphics:
     fill(255);
     ellipse(0, 0, 4, 4);
-
     /* Fancy ball graphics version:
      translate(3,3);
      fill(255, 10);
@@ -281,13 +220,81 @@ void myCustomRenderer(World world) {
      fill(255);
      ellipse(0, 0, 1.5, 2);
      */
-
-
-
     popMatrix();
   }
+}
+
+// on iOS, the first audio playback has to be triggered directly by a user interaction
+void mouseReleased() {
+  if (!userHasTriggeredAudio) {
+    for (int i=0;i<howManyElements;i++) {
+      crateSounds[i].volume(0);
+      crateSounds[i].play();
+    }
+    userHasTriggeredAudio = true;
+    buildLabyrinth();
+    resetBallPosition();
+  }
+  if (!levelRunning) {
+    startNextLevel();
+  }
+}
+
+/*Boolean checkIfTouched(float pointX, float pointY) {
+ PVector a = new PVector(pmouseX, pmouseY);
+ PVector b = new PVector(mouseX, mouseY);
+ PVector n = PVector.sub(b, a);
+ PVector p = new PVector(pointX, pointY);
+ 
+ PVector pointToLine = PVector.sub(PVector.sub(a, p), PVector.mult(n, PVector.dot(PVector.sub(a,p), n)));
+ float distance = pointToLine.mag();
+ stroke(0,0,0,20);
+ fill(0,0);
+ line(pmouseX, pmouseY, mouseX, mouseY);
+ ellipse(pmouseX, pmouseY, 20, 20);
+ 
+ if (distance <= 10 || dist(pmouseX, pmouseY, pointX, pointY) <= 10) {
+ 
+ println("hit " + round(distance) + " X: " + pointX + " Y: " + pointY);
+ pushMatrix();
+ translate(pointX, pointY);
+ 
+ // flash to show ball was hit
+ 
+ fill(255,0,0);
+ ellipse(0, 0, 40, 40);
+ popMatrix();
+ 
+ stroke(255,0,0);
+ line(a.x, a.y, b.x, b.y);
+ 
+ }
+ }*/
+
+void startNextLevel() {
+  levelRunning = true;
+
+  // to do: maybe display the labyrinth after completing
+
+  buildLabyrinth();
+  resetBallPosition();
+
+  currentLevel++;
+}
 
 
+void myCustomRenderer(World world) {
+  // Accelerometer visualization
+  //stroke(0);
+  //strokeWeight(1);
+  //line(width/2, height/2, width/2 + 20 * accel.getX(), height/2 - 20 * accel.getY());
+  //println(frameRate);
+
+  // Accelerometer impulse
+  /* Vec2 impulse = new Vec2(.001*accel.getX(), -.001*accel.getY());
+   for (var i = 0; i < balls.length; i++) {
+   balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
+   }*/
 }
 
 void keyPressed() {
@@ -296,29 +303,29 @@ void keyPressed() {
   //left cursor
   if (keyCode == LEFT) {
     Vec2 impulse = new Vec2(-.01, 0);
-    for (var i = 0; i < sand.length; i++) {
-      sand[i].applyImpulse(impulse, sand[i].getWorldCenter());
+    for (var i = 0; i < balls.length; i++) {
+      balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
     }
   }
   //right cursor
   if (keyCode == RIGHT) {
     Vec2 impulse = new Vec2(.01, 0);
-    for (var i = 0; i < sand.length; i++) {
-      sand[i].applyImpulse(impulse, sand[i].getWorldCenter());
+    for (var i = 0; i < balls.length; i++) {
+      balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
     }
   }
   //up cursor
   if (keyCode == UP) {
     Vec2 impulse = new Vec2(0, -.01);
-    for (var i = 0; i < sand.length; i++) {
-      sand[i].applyImpulse(impulse, sand[i].getWorldCenter());
+    for (var i = 0; i < balls.length; i++) {
+      balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
     }
   }
   //down cursor
   if (keyCode == DOWN) {
     Vec2 impulse = new Vec2(0, .01);
-    for (var i = 0; i < sand.length; i++) {
-      sand[i].applyImpulse(impulse, sand[i].getWorldCenter());
+    for (var i = 0; i < balls.length; i++) {
+      balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
     }
   }
 }
@@ -337,12 +344,11 @@ void collision(Body b1, Body b2, float impulse)
   }
 }
 
-void resetSandPosition() {
+void resetBallPosition() {
   for (var i = 0; i < howManyElements; i++) {
-    Vec2 newPosition = new Vec2(random(2, width-2), random(2, height/8-2));
+    Vec2 newPosition = new Vec2(random(2, width-2), random(2, height-2));
     newPosition = physics.screenToWorld(newPosition);
-    sand[i].setPosition(newPosition);
-    sand[i].SetLinearDamping(1);
+    balls[i].setPosition(newPosition);
   }
 }
 
