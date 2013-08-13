@@ -14,7 +14,7 @@ import org.jbox2d.dynamics.*;
 Maxim maxim;
 AudioPlayer[] crateSounds;
 
-int howManyElements = 20;
+int howManyElements = 3;
 int whichSoundLooper = 0;
 
 
@@ -193,8 +193,11 @@ void draw() {
       /*checkIfTouched(ballPos.x, ballPos.y);*/
     }
 
-    if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= 5 && speed <= .8) {
+    if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= 8 && speed <= .8) {
       println("Won  " + speed);
+      physics.getWorld().DestroyBody(balls[i]);
+      balls = concat(subset(balls,0,i), subset(balls,i+1,balls.length));
+      println(balls);
     }
 
     if (dist(mouseX, mouseY, ballPos.x, ballPos.y) <= 20 && speed <= .15)
