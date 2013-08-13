@@ -14,9 +14,9 @@ import org.jbox2d.dynamics.*;
 Maxim maxim;
 AudioPlayer[] crateSounds;
 
-int howManyElements = 3;
+int howManyElements = 20;
 int whichSoundLooper = 0;
-
+float ballRadius = 5;
 
 Physics physics; // The physics handler: we'll see more of this later
 // rigid bodies for the droid and two crates
@@ -98,7 +98,7 @@ void setup() {
   balls = new Body[howManyElements];
 
   for (var i = 0; i < howManyElements; i++) {
-    balls[i] = physics.createCircle(random(2, width-2), random(2, height-2), 2);
+    balls[i] = physics.createCircle(random(2, width-2), random(2, height-2), ballRadius);
     balls[i].SetLinearDamping(1.2);
   }
 
@@ -181,28 +181,28 @@ void draw() {
   pushMatrix();
   translate(hole.x, hole.y);
   fill(0);
-  ellipse(0, 0, 10, 10);
+  ellipse(0, 0, ballRadius*5, ballRadius*5);
   popMatrix();
 
   // ball-specific code:
   for (i = 0; i < balls.length; i++) {
     Vec2 ballPos = physics.worldToScreen(balls[i].getWorldCenter());
-    float speed = sqrt(abs((balls[i].getLinearVelocity().x) + sq(balls[i].getLinearVelocity().y)));
+    float speed =  2 / ballRadius * sqrt(abs((balls[i].getLinearVelocity().x) + sq(balls[i].getLinearVelocity().y)));
 
     if (mouseY - pmouseY != 0 || mouseX - pmouseX != 0) {
       /*checkIfTouched(ballPos.x, ballPos.y);*/
     }
 
-    if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= 8 && speed <= .8) {
+    if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= ballRadius*3.5 && speed <= .8) {
       println("Won  " + speed);
       physics.getWorld().DestroyBody(balls[i]);
       balls = concat(subset(balls,0,i), subset(balls,i+1,balls.length));
       println(balls);
     }
 
-    if (dist(mouseX, mouseY, ballPos.x, ballPos.y) <= 20 && speed <= .15)
+    if (dist(mouseX, mouseY, ballPos.x, ballPos.y) <= 30 && speed <= .15)
     {
-      Vec2 impulse = new Vec2(mouseVec.y*.001, mouseVec.x*.001);
+      Vec2 impulse = new Vec2(mouseVec.y*.0001*sq(ballRadius), mouseVec.x*.0001*sq(ballRadius));
       balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
     }
 
@@ -211,7 +211,7 @@ void draw() {
     translate(ballPos.x, ballPos.y);
     // Minimalist ball graphics:
     fill(255);
-    ellipse(0, 0, 4, 4);
+    ellipse(0, 0, ballRadius*2, ballRadius*2);
     /* Fancy ball graphics version:
      translate(3,3);
      fill(255, 10);
