@@ -153,7 +153,7 @@ void draw() {
     // draw main background
     int alpha = 255;
     fill(0, alpha);
-    background(0,100,0);
+    background(207,116,108);
   }
 
 
@@ -187,42 +187,45 @@ void draw() {
   // ball-specific code:
   for (i = 0; i < balls.length; i++) {
     Vec2 ballPos = physics.worldToScreen(balls[i].getWorldCenter());
-    float speed =  2 / ballRadius * sqrt(abs((balls[i].getLinearVelocity().x) + sq(balls[i].getLinearVelocity().y)));
+    float speed = sqrt(abs((balls[i].getLinearVelocity().x) + sq(balls[i].getLinearVelocity().y)));
 
     if (mouseY - pmouseY != 0 || mouseX - pmouseX != 0) {
       /*checkIfTouched(ballPos.x, ballPos.y);*/
     }
 
-    if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= ballRadius*3.5 && speed <= .8) {
+    if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= ballRadius * 2  && speed <= .8) {
       println("Won  " + speed);
       physics.getWorld().DestroyBody(balls[i]);
       balls = concat(subset(balls,0,i), subset(balls,i+1,balls.length));
-      println(balls);
     }
 
-    if (dist(mouseX, mouseY, ballPos.x, ballPos.y) <= 30 && speed <= .15)
+    if (dist(mouseX, mouseY, ballPos.x, ballPos.y) <= 30 && speed <= .075 * ballRadius)
     {
-      Vec2 impulse = new Vec2(mouseVec.y*.0001*sq(ballRadius), mouseVec.x*.0001*sq(ballRadius));
+      Vec2 impulse = new Vec2(mouseVec.y*.0002*sq(ballRadius), mouseVec.x*.0002*sq(ballRadius));
       balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
     }
 
     // draw balls
     pushMatrix();
     translate(ballPos.x, ballPos.y);
-    // Minimalist ball graphics:
-    fill(255);
+    // Fancy ball graphics:
+
+    // (shadow)
+    pushMatrix();
+    fill(0,50);
+    translate(.1*ballRadius, .1*ballRadius);
+    ellipse(0, 0, ballRadius*2.2, ballRadius*2.2);
+    popMatrix();
+    
+    // (main)
+    fill(230);
     ellipse(0, 0, ballRadius*2, ballRadius*2);
-    /* Fancy ball graphics version:
-     translate(3,3);
-     fill(255, 10);
-     ellipse(0, 0, 6, 6);
-     translate(-3,-3);
-     fill(50);
-     ellipse(0, 0, 4, 4);
-     translate(-1, -1);
-     fill(255);
-     ellipse(0, 0, 1.5, 2);
-     */
+
+    // (reflection)
+    translate(-ballRadius/2, -ballRadius/2);
+    fill(255);
+    ellipse(0, 0, ballRadius/3, ballRadius/2);
+     
     popMatrix();
   }
 }
