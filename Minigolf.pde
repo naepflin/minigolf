@@ -37,6 +37,8 @@ PVector hole;
 
 int counter = 0;
 
+int[][] blockShapes;
+
 
 // a handler that will detect collisions
 CollisionDetector detector; 
@@ -193,6 +195,13 @@ void buildLevel() {
         var bottomrightX = (j+1) * width / xResolution;
         var bottomrightY = height/8 + (i+1) * height *6/8 / yResolution;
         block = append(block, physics.createRect(topleftX-1, topleftY-1, bottomrightX+1, bottomrightY+1));
+        
+        
+        // saving block in blockShapes (STILL BUGGY)
+        int[] thisBlock = {topleftX, topleftY, bottomrightX, bottomrightY};
+        blockShapes = append(blockShapes, thisBlock);
+        println("hehe");
+        println(blockShapes);
       }
     }
   }
@@ -304,6 +313,11 @@ void draw() {
   mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
   textFont(mono);
   text(counter, width-20, 40);
+  
+  for (i = 0; i < block.length; i++) {
+    rect(); 
+  }
+  
 }
 
 // on iOS, the first audio playback has to be triggered directly by a user interaction
