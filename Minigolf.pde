@@ -14,7 +14,7 @@ import org.jbox2d.dynamics.*;
 Maxim maxim;
 AudioPlayer[] crateSounds;
 
-int howManyElements = 1;
+int howManyElements = 20;
 int whichSoundLooper = 0;
 float ballRadius = 5;
 
@@ -269,11 +269,21 @@ void draw() {
       /*checkIfTouched(ballPos.x, ballPos.y);*/
     }
 
+    // gravity when close to the hole
+    if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= ballRadius * 6) {
+      float force = sq(ballRadius) * .001 / (dist(ballPos.x, ballPos.y, hole.x, hole.y) / ballRadius);
+      Vec2 impulse =  new Vec2((hole.x-ballPos.x), (hole.y-ballPos.y));
+      impulse.normalize();
+      impulse = impulse.mul(force);
+      balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
+    }
+
     if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= ballRadius * 2  && speed <= 1.5) {
       //println("Won  " + speed);
       physics.getWorld().DestroyBody(balls[i]);
       balls = concat(subset(balls,0,i), subset(balls,i+1,balls.length));
     }
+    
 
     if (dist(mouseX, mouseY, ballPos.x, ballPos.y) <= 30 && speed <= .075 * ballRadius)
     {
