@@ -355,7 +355,7 @@ Physics = function (sketch, screenW,  screenH,
 		m_sketch : sketch,
 		m_gravity : new Vec2(gravX, gravY),	
 		m_density : 0.0,
-		m_restitution : .4,
+		m_restitution : 0.9,
 		m_friction : 0.9,
 		m_bullet : false, 
 		m_sensor : false, 
@@ -753,7 +753,7 @@ Physics = function (sketch, screenW,  screenH,
 		 * Set the restitution used for newly created shapes.
 		 * @param r
 		 */
-  		setRestitution : function(r) {
+		setRestitution : function(r) {
 			this.m_restitution = r;
 		},
 		

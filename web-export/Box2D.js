@@ -96,7 +96,7 @@ if (typeof(Box2D.Dynamics.Joints) === "undefined") Box2D.Dynamics.Joints = {};
    };
    Box2D.Collision.b2AABB = b2AABB;
 
-     function b2Bound() {
+   function b2Bound() {
       b2Bound.b2Bound.apply(this, arguments);
    };
    Box2D.Collision.b2Bound = b2Bound;

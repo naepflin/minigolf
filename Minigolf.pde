@@ -14,7 +14,7 @@ import org.jbox2d.dynamics.*;
 Maxim maxim;
 AudioPlayer[] crateSounds;
 
-int howManyElements = 20;
+int howManyElements = 1;
 int whichSoundLooper = 0;
 float ballRadius = 10;
 float holeRadius = 20;
@@ -159,6 +159,10 @@ void buildLevel() {
   {
     currentLevel = 0;
   }
+  
+  
+  physics.createRect(40, 40, 60, height-40);
+  physics.createPolygon(100,100,300,300,100,300);
   
   // Level 1 physics
   if (currentLevel == 1) {
@@ -421,6 +425,7 @@ void mouseReleased() {
 
 void startNextLevel() {
   levelRunning = true;
+  inHole = false;
   currentLevel++;
 
   // to do: maybe display the labyrinth after completing
