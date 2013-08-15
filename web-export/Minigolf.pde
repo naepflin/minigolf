@@ -37,6 +37,7 @@ PVector [] mouseVecHistory;
 PVector mouseVec;
 
 PVector hole;
+PVector startingPoint;
 
 int counter = 0;
 
@@ -56,7 +57,7 @@ boolean userHasTriggeredAudio = false;
 
 
 // define levels
-  
+
 boolean levelRunning = false;
 
 int currentLevel = 0;
@@ -108,6 +109,7 @@ void setup() {
   mouseVec = new PVector(1, 1);
 
   hole = new PVector(width/2, height/5);
+  startingPoint = new PVector(width/2, height*.8);
 
   // sets up the collision callbacks
   // detector = new CollisionDetector (physics, this);
@@ -121,7 +123,7 @@ void setup() {
     balls[i] = physics.createCircle(random(2, width-2), random(2, height-2), ballRadius);
     balls[i].SetLinearDamping(1.2);
   }
-  
+
 
   // accelerometer
   accel = new Accelerometer();
@@ -130,8 +132,8 @@ void setup() {
   // init sounds
   maxim = new Maxim(this);
   // now an array of crate sounds
-  crateSounds = new AudioPlayer[howManyElements];
-  for (int i=0;i<howManyElements;i++) {
+  crateSounds = new AudioPlayer[balls.length];
+  for (int i=0;i<balls.length;i++) {
     crateSounds[i] = maxim.loadFile("crate2.wav");
     crateSounds[i].setLooping(false);
   }
@@ -141,7 +143,7 @@ void setup() {
 }
 
 void buildLevel() {
-  
+
   // set density to 0 i.e. fixed physical element
   physics.setDensity(0);
   // delete the block objects from the world
@@ -159,27 +161,41 @@ void buildLevel() {
   {
     currentLevel = 0;
   }
-  
-  
-  
+
+
+
   // Level 1 physics
   if (currentLevel == 1) {
-        block = append(block, physics.createRect(40, 40, 60, height-40));
-        block = append(block, physics.createRect(40, 40, width-40, 60));
-        block = append(block, physics.createRect(width-60, 40, width-40, height-40));
-        block = append(block, physics.createRect(40, height-60, width-40, height-40));
+    hole = new Vec2(418, 115);
+    startingPoint = new Vec2(100, 500);
+    block = append(block, physics.createRect(40, 40, 60, height-40));
+    block = append(block, physics.createRect(40, 40, width-40, 60));
+    block = append(block, physics.createRect(width-60, 40, width-40, height-40));
+    block = append(block, physics.createRect(40, height-60, width-40, height-40));
 
-        block = append(block, physics.createPolygon(100,100,300,300,100,300));
+    //block = append(block, physics.createPolygon(100, 100, 300, 300, 100, 300));
+    float[][] polygons = {{100, 100, 300, 300, 100, 300}, {321, 251, 401, 248, 399, 375}};
+    buildPolygonPhysics(polygons);
+    //block = append(block, physics.createPolygon(321, 251, 401, 248, 399, 375, 317, 382, 371, 315));
   }
   // Level 2 physics
   if (currentLevel == 1) {
-        block = append(block, physics.createRect(40, 40, 60, height-40));
-        block = append(block, physics.createRect(40, 40, width-40, 60));
-        block = append(block, physics.createRect(width-60, 40, width-40, height-40));
-        block = append(block, physics.createRect(40, height-60, width-40, height-40));
+    block = append(block, physics.createRect(40, 40, 60, height-40));
+    block = append(block, physics.createRect(40, 40, width-40, 60));
+    block = append(block, physics.createRect(width-60, 40, width-40, height-40));
+    block = append(block, physics.createRect(40, height-60, width-40, height-40));
   }
+  
+  //balls = append(balls, physics.createCircle(startingPoint.x, startingPoint.y, ballRadius));
+  //balls[length-1].SetLinearDamping(1.2);
 
- 
+}
+
+
+void buildPolygonPhysics(float[][] polygons) {
+  for (var j = 0; j < polygons.length; j++) {
+    block = append(block, physics.createPolygon(polygons[j]));
+  }
 }
 
 
@@ -203,11 +219,10 @@ void draw() {
   else {
     int alpha = 255;
     fill(0, alpha);
-    image(groundImg,width/2,height/2);
+    image(groundImg, width/2, height/2);
     //background(207,116,108);
-    
   }
-  
+
   if (!levelRunning) {
     fill(255);
     textSize(32);
@@ -231,23 +246,23 @@ void draw() {
 
   // draw helper line to visualize mouse direction (debug)
   /*pushMatrix();
-  translate(width/2, height/2);
-  stroke(0, 255, 0);
-  line(0, 0, mouseVec.y, mouseVec.x);
-  popMatrix(); 
-  noStroke();*/
+   translate(width/2, height/2);
+   stroke(0, 255, 0);
+   line(0, 0, mouseVec.y, mouseVec.x);
+   popMatrix(); 
+   noStroke();*/
 
   // draw hole
   pushMatrix();
   translate(hole.x, hole.y);
   //fill(0);
   //ellipse(0, 0, ballRadius*5, ballRadius*5);
-  image(holeImg,0,0);
+  image(holeImg, 0, 0);
   popMatrix();
-  image(startingPointImg, width/2, height*.75);
+  image(startingPointImg, startingPoint.x, startingPoint.y);
 
 
-  if(inHole) {
+  if (inHole) {
     // draw balls
     pushMatrix();
     translate(hole.x, hole.y);
@@ -255,23 +270,23 @@ void draw() {
 
     // (shadow)
     pushMatrix();
-    fill(0,70);
+    fill(0, 70);
     translate(.1*ballRadius, .1*ballRadius);
     ellipse(0, 0, ballRadius*2.6, ballRadius*2.6);
     popMatrix();
-    
+
     // (main)
-    fill(30);
+    fill(42, 35, 0);
     ellipse(0, 0, ballRadius*2, ballRadius*2);
 
     // (reflection)
     translate(-ballRadius/2, -ballRadius/2);
     fill(60);
     ellipse(0, 0, ballRadius/3, ballRadius/2);
-     
+
     popMatrix();
   }
-      
+
 
 
 
@@ -297,12 +312,12 @@ void draw() {
     if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= holeRadius * .7  && speed <= 1.5) {
       //println("Won  " + speed);
       physics.getWorld().DestroyBody(balls[i]);
-      balls = concat(subset(balls,0,i), subset(balls,i+1,balls.length));
+      balls = concat(subset(balls, 0, i), subset(balls, i+1, balls.length));
       inHole = true;
       levelRunning = false;
     }
-      
-        
+
+
     // draw balls
     pushMatrix();
     translate(ballPos.x, ballPos.y);
@@ -310,68 +325,81 @@ void draw() {
 
     // (shadow)
     pushMatrix();
-    fill(0,70);
+    fill(0, 70);
     translate(.1*ballRadius, .1*ballRadius);
     ellipse(0, 0, ballRadius*2.6, ballRadius*2.6);
     popMatrix();
-    
+
     // (main)
-    fill(230);
+    fill(249, 230, 149);
     ellipse(0, 0, ballRadius*2, ballRadius*2);
 
     // (reflection)
     translate(-ballRadius/2, -ballRadius/2);
     fill(255);
     ellipse(0, 0, ballRadius/3, ballRadius/2);
-     
+
     popMatrix();
-    
+
 
     // apply and count hit
     if (dist(mouseX, mouseY, ballPos.x, ballPos.y) <= 30 && speed <= .075 * ballRadius)
     {
       Vec2 impulse = new Vec2(mouseVec.y*.0002*sq(ballRadius), mouseVec.x*.0002*sq(ballRadius));
       balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
+      println(i);
       counter++;
     }
-
   }
-  
+
   drawLevel();
 
-  
+
   // draw the hit counter
   fill(255);
-  textSize(32);
+  textSize(24);
   textAlign(RIGHT);
   PFont mono;
   mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
   textFont(mono);
-  text(counter, width-20, 40);
+  text("Schläge: " + counter, width-20, 30);
 
   // draw the level indicator
   fill(255);
-  textSize(32);
+  textSize(24);
   textAlign(LEFT);
   PFont mono;
   mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
   textFont(mono);
-  text("Bahn " + currentLevel, 20, 40);
-  
-  
+  text("Bahn " + currentLevel, 20, 30);
+
+
   for (i = 0; i < block.length; i++) {
-    rect(); 
+    rect();
   }
-  
 }
 
 void drawLevel() {
   if (currentLevel == 1) {
     fill(255);
-    rect(40,40,width-80, 20); //horizontal bar
-    rect(40,40,20,height-80); //vertical bar
-    rect(40,height-60,width-80, 20); //horizontal bar
-    rect(width-60,40,20,height-80); //vertical bar
+    rect(40, 40, width-80, 20); //horizontal bar
+    rect(40, 40, 20, height-80); //vertical bar
+    rect(40, height-60, width-80, 20); //horizontal bar
+    rect(width-60, 40, 20, height-80); //vertical bar
+
+    float[][] shape = {{100, 100, 300, 300, 100, 300},{321, 251, 401, 248, 399, 375}};
+    drawPolygon(shape);
+  }
+}
+
+
+void drawPolygon(float[][] shape) {
+  for (var j = 0; j < shape.length; j++) {
+    beginShape();
+    for (var i = 0; i < shape[j].length / 2; i++) {
+      vertex(shape[j][2*i], shape[j][2*i+1]);
+    }
+    endShape();
   }
 }
 
@@ -380,9 +408,9 @@ void drawLevel() {
 void mouseReleased() {
   if (!userHasTriggeredAudio) {
     /*for (int i=0;i<howManyElements;i++) {
-      crateSounds[i].volume(0);
-      crateSounds[i].play();
-    }*/
+     crateSounds[i].volume(0);
+     crateSounds[i].play();
+     }*/
     userHasTriggeredAudio = true;
     buildLevel();
     resetBallPosition();
@@ -390,6 +418,8 @@ void mouseReleased() {
   if (!levelRunning) {
     startNextLevel();
   }
+
+  println (mouseX + ", " + mouseY + ", ");
 }
 
 /*Boolean checkIfTouched(float pointX, float pointY) {
@@ -431,7 +461,6 @@ void startNextLevel() {
   // to do: maybe display the labyrinth after completing
   buildLevel();
   resetBallPosition();
-
 }
 
 
@@ -495,20 +524,20 @@ void collision(Body b1, Body b2, float impulse)
   crateSounds[whichSoundLooper].play();
 
   whichSoundLooper++;
-  if (whichSoundLooper >= howManyElements) {
+  if (whichSoundLooper >= balls.length) {
     whichSoundLooper = 0;
   }
 }
 
 void resetBallPosition() {
-    for (var i = 0; i < balls.length; i++) {
-      Vec2 position = new Vec2(width/2, height*.75);
-      position = physics.screenToWorld(position);
-      balls[i].setPosition(position);
+  for (var i = 0; i < balls.length; i++) {
+    Vec2 position = new Vec2(startingPoint.x, startingPoint.y);
+    position = physics.screenToWorld(position);
+    balls[i].setPosition(position);
 
-      Vec2 velocity = new Vec2(0, 0);
-      balls[i].setLinearVelocity(velocity);
-    }
+    Vec2 velocity = new Vec2(0, 0);
+    balls[i].setLinearVelocity(velocity);
+  }
 }
 
 
