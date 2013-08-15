@@ -161,8 +161,6 @@ void buildLevel() {
   }
   
   
-  physics.createRect(40, 40, 60, height-40);
-  physics.createPolygon(100,100,300,300,100,300);
   
   // Level 1 physics
   if (currentLevel == 1) {
@@ -170,6 +168,8 @@ void buildLevel() {
         block = append(block, physics.createRect(40, 40, width-40, 60));
         block = append(block, physics.createRect(width-60, 40, width-40, height-40));
         block = append(block, physics.createRect(40, height-60, width-40, height-40));
+
+        block = append(block, physics.createPolygon(100,100,300,300,100,300));
   }
   // Level 2 physics
   if (currentLevel == 1) {
