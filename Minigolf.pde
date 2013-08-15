@@ -185,9 +185,13 @@ void buildLevel() {
     block = append(block, physics.createRect(width-60, 40, width-40, height-40));
     block = append(block, physics.createRect(40, height-60, width-40, height-40));
   }
-  
-  //balls = append(balls, physics.createCircle(startingPoint.x, startingPoint.y, ballRadius));
-  //balls[length-1].SetLinearDamping(1.2);
+ 
+ 
+  physics.setDensity(10.0);
+  Body newBall = physics.createCircle(width-100, height-100, ballRadius);
+  newBall.SetLinearDamping(1.2);
+  balls = append(balls, newBall);
+  println(balls.length);
 
 }
 
@@ -309,6 +313,7 @@ void draw() {
     }
 
 
+    // ball drops in hole
     if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= holeRadius * .7  && speed <= 1.5) {
       //println("Won  " + speed);
       physics.getWorld().DestroyBody(balls[i]);
@@ -347,7 +352,6 @@ void draw() {
     {
       Vec2 impulse = new Vec2(mouseVec.y*.0002*sq(ballRadius), mouseVec.x*.0002*sq(ballRadius));
       balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
-      println(i);
       counter++;
     }
   }
@@ -422,36 +426,6 @@ void mouseReleased() {
   println (mouseX + ", " + mouseY + ", ");
 }
 
-/*Boolean checkIfTouched(float pointX, float pointY) {
- PVector a = new PVector(pmouseX, pmouseY);
- PVector b = new PVector(mouseX, mouseY);
- PVector n = PVector.sub(b, a);
- PVector p = new PVector(pointX, pointY);
- 
- PVector pointToLine = PVector.sub(PVector.sub(a, p), PVector.mult(n, PVector.dot(PVector.sub(a,p), n)));
- float distance = pointToLine.mag();
- stroke(0,0,0,20);
- fill(0,0);
- line(pmouseX, pmouseY, mouseX, mouseY);
- ellipse(pmouseX, pmouseY, 20, 20);
- 
- if (distance <= 10 || dist(pmouseX, pmouseY, pointX, pointY) <= 10) {
- 
- println("hit " + round(distance) + " X: " + pointX + " Y: " + pointY);
- pushMatrix();
- translate(pointX, pointY);
- 
- // flash to show ball was hit
- 
- fill(255,0,0);
- ellipse(0, 0, 40, 40);
- popMatrix();
- 
- stroke(255,0,0);
- line(a.x, a.y, b.x, b.y);
- 
- }
- }*/
 
 void startNextLevel() {
   levelRunning = true;
@@ -465,17 +439,6 @@ void startNextLevel() {
 
 
 void myCustomRenderer(World world) {
-  // Accelerometer visualization
-  //stroke(0);
-  //strokeWeight(1);
-  //line(width/2, height/2, width/2 + 20 * accel.getX(), height/2 - 20 * accel.getY());
-  //println(frameRate);
-
-  // Accelerometer impulse
-  /* Vec2 impulse = new Vec2(.001*accel.getX(), -.001*accel.getY());
-   for (var i = 0; i < balls.length; i++) {
-   balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
-   }*/
 }
 
 void keyPressed() {
@@ -518,7 +481,7 @@ void keyPressed() {
 
 void collision(Body b1, Body b2, float impulse)
 {
-  crateSounds[whichSoundLooper].cue(0);
+/*  crateSounds[whichSoundLooper].cue(0);
   //crateSounds[whichSoundLooper].speed(0.25 + (impulse / 250));// 10000 as the crates move slower??
   crateSounds[whichSoundLooper].volume(impulse);
   crateSounds[whichSoundLooper].play();
@@ -526,7 +489,7 @@ void collision(Body b1, Body b2, float impulse)
   whichSoundLooper++;
   if (whichSoundLooper >= balls.length) {
     whichSoundLooper = 0;
-  }
+  }*/
 }
 
 void resetBallPosition() {
