@@ -142,67 +142,6 @@ void setup() {
   detector = new CollisionDetector (physics, this);
 }
 
-void buildLevel() {
-
-  // set density to 0 i.e. fixed physical element
-  physics.setDensity(0);
-  // delete the block objects from the world
-  for (i = 0; i < block.length; i++) {
-    physics.getWorld().DestroyBody(block[i]);
-  }
-  // empty the block array
-  block.length = 0;
-
-
-
-  // build the new level
-  // reset if last level is reached 
-  if (currentLevel >= 10)
-  {
-    currentLevel = 0;
-  }
-
-
-
-  // Level 1 physics
-  if (currentLevel == 1) {
-    hole = new Vec2(418, 115);
-    startingPoint = new Vec2(100, 500);
-    block = append(block, physics.createRect(40, 40, 60, height-40));
-    block = append(block, physics.createRect(40, 40, width-40, 60));
-    block = append(block, physics.createRect(width-60, 40, width-40, height-40));
-    block = append(block, physics.createRect(40, height-60, width-40, height-40));
-
-    //block = append(block, physics.createPolygon(100, 100, 300, 300, 100, 300));
-    float[][] polygons = {{100, 100, 300, 300, 100, 300}, {321, 251, 401, 248, 399, 375}};
-    buildPolygonPhysics(polygons);
-    //block = append(block, physics.createPolygon(321, 251, 401, 248, 399, 375, 317, 382, 371, 315));
-  }
-  // Level 2 physics
-  if (currentLevel == 1) {
-    block = append(block, physics.createRect(40, 40, 60, height-40));
-    block = append(block, physics.createRect(40, 40, width-40, 60));
-    block = append(block, physics.createRect(width-60, 40, width-40, height-40));
-    block = append(block, physics.createRect(40, height-60, width-40, height-40));
-  }
- 
- 
-  physics.setDensity(10.0);
-  Body newBall = physics.createCircle(width-100, height-100, ballRadius);
-  newBall.SetLinearDamping(1.2);
-  balls = append(balls, newBall);
-  println(balls.length);
-
-}
-
-
-void buildPolygonPhysics(float[][] polygons) {
-  for (var j = 0; j < polygons.length; j++) {
-    block = append(block, physics.createPolygon(polygons[j]));
-  }
-}
-
-
 
 void draw() {
   // draw backgrounds
@@ -383,19 +322,31 @@ void draw() {
   }
 }
 
-void drawLevel() {
-  if (currentLevel == 1) {
-    fill(255);
-    rect(40, 40, width-80, 20); //horizontal bar
-    rect(40, 40, 20, height-80); //vertical bar
-    rect(40, height-60, width-80, 20); //horizontal bar
-    rect(width-60, 40, 20, height-80); //vertical bar
 
-    float[][] shape = {{100, 100, 300, 300, 100, 300},{321, 251, 401, 248, 399, 375}};
+
+void drawLevel() {
+  //walls
+  fill(255);
+  rect(40, 40, width-80, 20); //horizontal bar
+  rect(40, 40, 20, height-80); //vertical bar
+  rect(40, height-60, width-80, 20); //horizontal bar
+  rect(width-60, 40, 20, height-80); //vertical bar
+  
+  
+  if (currentLevel == 2) {
+    fill(255);
+
+    float[][] shape = {
+      {
+        100, 100, 300, 300, 100, 300
+      }
+      , {
+        321, 251, 401, 248, 399, 375
+      }
+    };
     drawPolygon(shape);
   }
 }
-
 
 void drawPolygon(float[][] shape) {
   for (var j = 0; j < shape.length; j++) {
@@ -406,6 +357,71 @@ void drawPolygon(float[][] shape) {
     endShape();
   }
 }
+
+
+void buildLevel() {
+  // delete the old block bodies from the world
+  for (i = 0; i < block.length; i++) {
+    physics.getWorld().DestroyBody(block[i]);
+  }
+  // empty the block array
+  block.length = 0;
+
+
+  // set density to 0 i.e. fixed physical element
+  physics.setDensity(0);
+
+
+  // build the new level
+
+  // walls
+  block = append(block, physics.createRect(40, 40, 60, height-40));
+  block = append(block, physics.createRect(40, 40, width-40, 60));
+  block = append(block, physics.createRect(width-60, 40, width-40, height-40));
+  block = append(block, physics.createRect(40, height-60, width-40, height-40));
+
+  // default hole and starting point position
+  hole = new Vec2(width/2, height*.2);
+  startingPoint = new Vec2(width/2, height*.8);
+  
+  // Level 1 physics
+  if (currentLevel == 1) {
+    hole = new Vec2(width/2, height*.2);
+    startingPoint = new Vec2(width/2, height*.8);
+  }
+  // Level 2 physics
+  if (currentLevel == 2) {
+    hole = new Vec2(400, 120);
+    startingPoint = new Vec2(100, 500);
+
+    float[][] polygons = {
+      {
+        100, 100, 300, 300, 100, 300
+      }
+      , {
+        321, 251, 401, 248, 399, 375
+      }
+    };
+    buildPolygonBody(polygons);
+  }
+
+
+  physics.setDensity(10.0);
+  Body newBall = physics.createCircle(width-100, height-100, ballRadius);
+  newBall.SetLinearDamping(1.2);
+  balls = append(balls, newBall);
+  println(balls.length);
+}
+
+
+void buildPolygonBody(float[][] polygons) {
+  for (var j = 0; j < polygons.length; j++) {
+    block = append(block, physics.createPolygon(polygons[j]));
+  }
+}
+
+
+
 
 
 // on iOS, the first audio playback has to be triggered directly by a user interaction
@@ -428,6 +444,9 @@ void mouseReleased() {
 
 
 void startNextLevel() {
+  // reset if last level is reached 
+  if (currentLevel >= 10) currentLevel = 0;
+
   levelRunning = true;
   inHole = false;
   currentLevel++;
@@ -476,20 +495,56 @@ void keyPressed() {
       balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
     }
   }
+  if (keyCode == 49) {
+    currentLevel = 1;
+    buildLevel();
+  }
+  if (keyCode == 50) {
+    currentLevel = 2;
+    buildLevel();
+  }
+  if (keyCode == 51) {
+    currentLevel = 3;
+    buildLevel();
+  }
+  if (keyCode == 52) {
+    currentLevel = 4;
+    buildLevel();
+  }
+  if (keyCode == 53) {
+    currentLevel = 5;
+    buildLevel();
+  }
+  if (keyCode == 54) {
+    currentLevel = 6;
+    buildLevel();
+  }
+  if (keyCode == 55) {
+    currentLevel = 7;
+    buildLevel();
+  }
+  if (keyCode == 56) {
+    currentLevel = 8;
+    buildLevel();
+  }
+  if (keyCode == 57) {
+    currentLevel = 9;
+    buildLevel();
+  }
 }
 
 
 void collision(Body b1, Body b2, float impulse)
 {
-/*  crateSounds[whichSoundLooper].cue(0);
-  //crateSounds[whichSoundLooper].speed(0.25 + (impulse / 250));// 10000 as the crates move slower??
-  crateSounds[whichSoundLooper].volume(impulse);
-  crateSounds[whichSoundLooper].play();
-
-  whichSoundLooper++;
-  if (whichSoundLooper >= balls.length) {
-    whichSoundLooper = 0;
-  }*/
+  /*  crateSounds[whichSoundLooper].cue(0);
+   //crateSounds[whichSoundLooper].speed(0.25 + (impulse / 250));// 10000 as the crates move slower??
+   crateSounds[whichSoundLooper].volume(impulse);
+   crateSounds[whichSoundLooper].play();
+   
+   whichSoundLooper++;
+   if (whichSoundLooper >= balls.length) {
+   whichSoundLooper = 0;
+   }*/
 }
 
 void resetBallPosition() {
