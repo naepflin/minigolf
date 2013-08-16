@@ -30,7 +30,6 @@ PImage groundImg;
 PImage holeImg;
 PImage startingPointImg;
 
-float[] angles;
 float mousedir = 0;
 
 PVector [] mouseVecHistory;
@@ -96,11 +95,6 @@ void setup() {
   holeImg = loadImage("hole.png");
   startingPointImg = loadImage("starting-point.png");
 
-  angles = new float[10];
-  for (int i=0;i<angles.length;i++)
-  {
-    angles[i]=0;
-  }
   mouseVecHistory = new PVector[10];
   for (int i=0;i<mouseVecHistory.length;i++)
   {
@@ -350,7 +344,7 @@ void drawLevel() {
   
   if (currentLevel == 3) {
     fill(255);
-
+    stroke(255);
     float[][] shape = {
 {
 144, 469, 
@@ -423,7 +417,29 @@ void drawLevel() {
 155, 330
 }
     };
-    drawPolygon(shape);
+    
+    
+    float[][] pilatus = {
+      
+      {144, 469,
+262, 507, 
+432, 452, 
+446, 386, 
+423, 331, 
+393, 295, 
+378, 266, 
+360, 302, 
+349, 285, 
+304, 278, 
+283, 301, 
+265, 331, 
+244, 308, 
+203, 301, 
+191, 326, 
+155, 330, 
+123, 359}};
+
+    drawPolygon(pilatus);
   }
 
   
@@ -490,7 +506,7 @@ void buildLevel() {
   
   
   
- /* // Level 3 physics
+  // Level 3 physics
   if (currentLevel == 3) {
     hole = new Vec2(400, 120);
     startingPoint = new Vec2(100, 500);
@@ -568,7 +584,7 @@ void buildLevel() {
       }
     };
     buildPolygonBody(polygons);
-  }*/
+  }
 
   //create a new ball
   physics.setDensity(10.0);
@@ -580,8 +596,7 @@ void buildLevel() {
 
 void buildPolygonBody(float[][] polygons) {
   for (var j = 0; j < polygons.length; j++) {
-    block = append(block, physics.createChain(polygons[j]));
-    println("klajdlf");
+    block = append(block, physics.createPolygon(polygons[j]));
   }
 }
 
