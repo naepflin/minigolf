@@ -345,7 +345,7 @@ void drawLevel() {
   if (currentLevel == 3) {
     fill(255);
     stroke(255);
-    drawPolygon(pilatus);
+    drawPolygon(realPilatus);
   }
   
   if (currentLevel == 4) {
@@ -358,6 +358,13 @@ void drawLevel() {
     fill(255);
     stroke(255);
     drawPolygon(star);
+  }
+  
+  if (currentLevel == 6) {
+    fill(255);
+    stroke(255);
+    drawPolygon(wallBottomRight);
+    drawPolygon(deflectorTopLeft);
   }
   
 }
@@ -425,7 +432,7 @@ void buildLevel() {
   if (currentLevel == 3) {
     hole = new Vec2(400, 120);
     startingPoint = new Vec2(100, 500);
-    buildPolygonBody(pilatus);
+    buildPolygonBody(realPilatus);
   }
 
   // Level 4 physics
@@ -441,6 +448,16 @@ void buildLevel() {
     startingPoint = new Vec2(100, 500);
     buildPolygonBody(star);
   }
+  
+  // Level 6 physics
+  if (currentLevel == 6) {
+    hole = new Vec2(400, 120);
+    startingPoint = new Vec2(134, 671);
+    buildPolygonBody(wallBottomRight);
+    buildPolygonBody(deflectorTopLeft);
+  }
+  
+  
 
   //create a new ball
   physics.setDensity(10.0);
