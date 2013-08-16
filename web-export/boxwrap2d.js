@@ -566,6 +566,7 @@ Physics = function (sketch, screenW,  screenH,
       
       return b;
     },
+    
 		
 		
 		setBodyDefProperties : function(bd) {

@@ -346,6 +346,87 @@ void drawLevel() {
     };
     drawPolygon(shape);
   }
+  
+  
+  if (currentLevel == 3) {
+    fill(255);
+
+    float[][] shape = {
+{
+144, 469, 
+155, 330, 
+262, 507
+}, 
+{
+262, 507, 
+155, 330, 
+432, 452
+}, 
+{
+432, 452, 
+155, 330, 
+446, 386
+}, 
+{
+423, 331, 
+446, 386, 
+393, 295
+}, 
+{
+378, 266, 
+393, 295, 
+360, 302
+}, 
+{
+393, 295, 
+446, 386, 
+360, 302
+}, 
+{
+349, 285, 
+360, 302, 
+304, 278
+}, 
+{
+360, 302, 
+446, 386, 
+304, 278
+}, 
+{
+304, 278, 
+446, 386, 
+283, 301
+}, 
+{
+283, 301, 
+446, 386, 
+265, 331
+}, 
+{
+446, 386, 
+155, 330, 
+265, 331
+}, 
+{
+244, 308, 
+265, 331, 
+203, 301
+}, 
+{
+203, 301, 
+265, 331, 
+191, 326
+}, 
+{
+191, 326, 
+265, 331, 
+155, 330
+}
+    };
+    drawPolygon(shape);
+  }
+
+  
 }
 
 void drawPolygon(float[][] shape) {
@@ -370,6 +451,7 @@ void buildLevel() {
 
   // set density to 0 i.e. fixed physical element
   physics.setDensity(0);
+
 
 
   // build the new level
@@ -404,19 +486,102 @@ void buildLevel() {
     };
     buildPolygonBody(polygons);
   }
+  
+  
+  
+  
+ /* // Level 3 physics
+  if (currentLevel == 3) {
+    hole = new Vec2(400, 120);
+    startingPoint = new Vec2(100, 500);
 
+    float[][] polygons = {
+      {
+      144, 469, 
+      155, 330, 
+      262, 507
+      }, 
+      {
+      262, 507, 
+      155, 330, 
+      432, 452
+      }, 
+      {
+      432, 452, 
+      155, 330, 
+      446, 386
+      }, 
+      {
+      423, 331, 
+      446, 386, 
+      393, 295
+      }, 
+      {
+      378, 266, 
+      393, 295, 
+      360, 302
+      }, 
+      {
+      393, 295, 
+      446, 386, 
+      360, 302
+      }, 
+      {
+      349, 285, 
+      360, 302, 
+      304, 278
+      }, 
+      {
+      360, 302, 
+      446, 386, 
+      304, 278
+      }, 
+      {
+      304, 278, 
+      446, 386, 
+      283, 301
+      }, 
+      {
+      283, 301, 
+      446, 386, 
+      265, 331
+      }, 
+      {
+      446, 386, 
+      155, 330, 
+      265, 331
+      }, 
+      {
+      244, 308, 
+      265, 331, 
+      203, 301
+      }, 
+      {
+      203, 301, 
+      265, 331, 
+      191, 326
+      }, 
+      {
+      191, 326, 
+      265, 331, 
+      155, 330
+      }
+    };
+    buildPolygonBody(polygons);
+  }*/
 
+  //create a new ball
   physics.setDensity(10.0);
   Body newBall = physics.createCircle(width-100, height-100, ballRadius);
   newBall.SetLinearDamping(1.2);
   balls = append(balls, newBall);
-  println(balls.length);
 }
 
 
 void buildPolygonBody(float[][] polygons) {
   for (var j = 0; j < polygons.length; j++) {
-    block = append(block, physics.createPolygon(polygons[j]));
+    block = append(block, physics.createChain(polygons[j]));
+    println("klajdlf");
   }
 }
 
