@@ -492,7 +492,7 @@ void mouseReleased() {
     startNextLevel();
   }
 
-  println (mouseX + ", " + mouseY + ", ");
+  //println (mouseX + ", " + mouseY + ", ");
 }
 
 
@@ -584,6 +584,11 @@ void keyPressed() {
     currentLevel = 9;
     buildLevel();
   }
+  if (key == 'a') {
+    String[] params = {"q", "test"};
+    post_to_url("http://google.com", params, "post");
+  }
+  
 }
 
 
