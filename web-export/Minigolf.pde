@@ -42,6 +42,9 @@ int counter = 0;
 
 Boolean inHole = false;
 
+int hitDelay = 60;
+int hitDelayCounter = hitDelay;
+
 
 // a handler that will detect collisions
 CollisionDetector detector; 
@@ -220,6 +223,7 @@ void draw() {
 
 
 
+  hitDelayCounter++;
 
   // ball-specific code:
   for (i = 0; i < balls.length; i++) {
@@ -277,9 +281,12 @@ void draw() {
     // apply and count hit
     if (dist(mouseX, mouseY, ballPos.x, ballPos.y) <= 30 && speed <= .075 * ballRadius)
     {
-      Vec2 impulse = new Vec2(mouseVec.y*.0002*sq(ballRadius), mouseVec.x*.0002*sq(ballRadius));
-      balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
-      counter++;
+      if (hitDelayCounter > hitDelay) {
+        Vec2 impulse = new Vec2(mouseVec.y*.0002*sq(ballRadius), mouseVec.x*.0002*sq(ballRadius));
+        balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
+        counter++;
+        hitDelayCounter = 0;
+      }
     }
   }
 
