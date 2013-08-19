@@ -144,13 +144,16 @@ void draw() {
   if (!userHasTriggeredAudio) {
     fill(0, 0, 120);
     rect(0, 0, width, height);
-    fill(255);
     textSize(32);
     textAlign(CENTER);
     PFont mono;
     mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
     textFont(mono);
+    fill(0);
+    text("Tap to start", width/2+1, height/2+1);
+    fill(255);
     text("Tap to start", width/2, height/2);
+
   }
   // draw main background
   else {
@@ -160,15 +163,6 @@ void draw() {
     //background(207,116,108);
   }
 
-  if (!levelRunning) {
-    fill(255);
-    textSize(32);
-    textAlign(CENTER);
-    PFont mono;
-    mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
-    textFont(mono);
-    text("Tap for next level", width/2, height/2);
-  }
 
   // calculate mouse direction with a buffer based on vectors (average of recent mouse motions)
   if (mouseY - pmouseY != 0 || mouseX - pmouseX != 0) {
@@ -292,6 +286,21 @@ void draw() {
   drawLevel();
 
 
+
+  if (!levelRunning) {
+    textSize(32);
+    textAlign(CENTER);
+    PFont mono;
+    mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
+    textFont(mono);
+    fill(0);
+    text("Tap for next level", width/2+1, height/2+1);
+    fill(255);
+    text("Tap for next level", width/2, height/2);
+  }
+
+
+
   // draw the hit counter
   fill(255);
   textSize(24);
@@ -346,6 +355,7 @@ void drawLevel() {
     fill(255);
     stroke(255);
     drawPolygon(realPilatus);
+    drawPolygon(pilatusTriangle);
   }
   
   if (currentLevel == 4) {
@@ -433,6 +443,7 @@ void buildLevel() {
     hole = new Vec2(400, 120);
     startingPoint = new Vec2(100, 500);
     buildPolygonBody(realPilatus);
+    buildPolygonBody(pilatusTriangle);
   }
 
   // Level 4 physics
@@ -551,38 +562,47 @@ void keyPressed() {
   if (keyCode == 49) {
     currentLevel = 1;
     buildLevel();
+    resetBallPosition();
   }
   if (keyCode == 50) {
     currentLevel = 2;
     buildLevel();
+    resetBallPosition();
   }
   if (keyCode == 51) {
     currentLevel = 3;
     buildLevel();
+    resetBallPosition();
   }
   if (keyCode == 52) {
     currentLevel = 4;
     buildLevel();
+    resetBallPosition();
   }
   if (keyCode == 53) {
     currentLevel = 5;
     buildLevel();
+    resetBallPosition();
   }
   if (keyCode == 54) {
     currentLevel = 6;
     buildLevel();
+    resetBallPosition();
   }
   if (keyCode == 55) {
     currentLevel = 7;
     buildLevel();
+    resetBallPosition();
   }
   if (keyCode == 56) {
     currentLevel = 8;
     buildLevel();
+    resetBallPosition();
   }
   if (keyCode == 57) {
     currentLevel = 9;
     buildLevel();
+    resetBallPosition();
   }
   if (key == 'a') {
     String[] params = {"q", "test"};
