@@ -99,7 +99,7 @@ void setup() {
   holeImg = loadImage("hole.png");
   startingPointImg = loadImage("starting-point.png");
 
-  mouseVecHistory = new PVector[10];
+  mouseVecHistory = new PVector[5];
   for (int i=0;i<mouseVecHistory.length;i++)
   {
     mouseVecHistory[i]= new PVector(1, 1);
@@ -222,11 +222,13 @@ void draw() {
     popMatrix();
   }
 
+  drawLevel();
 
 
-  hitDelayCounter++;
+
 
   // ball-specific code:
+  hitDelayCounter++;
   for (i = 0; i < balls.length; i++) {
     Vec2 ballPos = physics.worldToScreen(balls[i].getWorldCenter());
     float speed = sqrt(abs((balls[i].getLinearVelocity().x) + sq(balls[i].getLinearVelocity().y)));
@@ -280,25 +282,50 @@ void draw() {
 
 
     // apply and count hit
-    if (dist(mouseX, mouseY, ballPos.x, ballPos.y) <= 30)
+    if (hitDelayCounter > hitDelay && speed <= .075 * ballRadius)
     {
-      if (hitDelayCounter > hitDelay && pointerWasOutside && speed <= .075 * ballRadius) {
-        Vec2 impulse = new Vec2(mouseVec.y*.0002*sq(ballRadius), mouseVec.x*.0002*sq(ballRadius));
-        balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
-        counter++;
-        hitDelayCounter = 0;
-        pointerWasOutside = false;
+      if (dist(mouseX, mouseY, ballPos.x, ballPos.y) <= 30) {
+        if (pointerWasOutside) {
+          Vec2 impulse = new Vec2(mouseVec.y*.0004*sq(ballRadius), mouseVec.x*.0004*sq(ballRadius));
+          balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
+          counter++;
+          hitDelayCounter = 0;
+          pointerWasOutside = false;
+        }
+        textSize(16);
+        textAlign(CENTER);
+        PFont mono;
+        mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
+        textFont(mono);
+        fill(0);
+        text("Schläger ausholen und schiessen", mouseX, mouseY);
       }
+      else {
+        if (pmouseX != mouseX && pmouseY != mouseY) {
+          pointerWasOutside = true;
+        }
+      }
+
+      // draw the putter
+      pushMatrix();
+      translate(mouseX, mouseY);
+      rotate(atan(mouseVec.x/mouseVec.y));
+      fill(255);
+      stroke(0);
+      rect(-5, -15, 10, 30);
+      noStroke();
+      popMatrix();
     }
     else {
-      if (pmouseX != mouseX && pmouseY != mouseY) {
-        pointerWasOutside = true;
-      }
+      textSize(16);
+      textAlign(CENTER);
+      PFont mono;
+      mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
+      textFont(mono);
+      fill(0);
+      text("Warten bis Ball hält...", mouseX, mouseY);
     }
   }
-
-  drawLevel();
-
 
 
   if (!levelRunning) {
@@ -332,11 +359,6 @@ void draw() {
   mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
   textFont(mono);
   text("Bahn " + currentLevel, 20, 30);
-
-
-  for (i = 0; i < block.length; i++) {
-    rect();
-  }
 }
 
 
@@ -517,7 +539,7 @@ void mouseReleased() {
     startNextLevel();
   }
 
-  //println (mouseX + ", " + mouseY + ", ");
+//  println (mouseX + ", " + mouseY + ", ");
 }
 
 
