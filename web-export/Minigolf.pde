@@ -44,6 +44,7 @@ Boolean inHole = false;
 
 int hitDelay = 60;
 int hitDelayCounter = hitDelay;
+Boolean pointerWasOutside = false;
 
 
 // a handler that will detect collisions
@@ -279,13 +280,19 @@ void draw() {
 
 
     // apply and count hit
-    if (dist(mouseX, mouseY, ballPos.x, ballPos.y) <= 30 && speed <= .075 * ballRadius)
+    if (dist(mouseX, mouseY, ballPos.x, ballPos.y) <= 30)
     {
-      if (hitDelayCounter > hitDelay) {
+      if (hitDelayCounter > hitDelay && pointerWasOutside && speed <= .075 * ballRadius) {
         Vec2 impulse = new Vec2(mouseVec.y*.0002*sq(ballRadius), mouseVec.x*.0002*sq(ballRadius));
         balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
         counter++;
         hitDelayCounter = 0;
+        pointerWasOutside = false;
+      }
+    }
+    else {
+      if (pmouseX != mouseX && pmouseY != mouseY) {
+        pointerWasOutside = true;
       }
     }
   }
