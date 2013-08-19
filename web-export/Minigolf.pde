@@ -14,7 +14,7 @@ import org.jbox2d.dynamics.*;
 Maxim maxim;
 AudioPlayer[] crateSounds;
 
-int howManyElements = 1;
+int howManyElements = 10;
 int whichSoundLooper = 0;
 float ballRadius = 10;
 float holeRadius = 20;
@@ -146,7 +146,7 @@ void draw() {
   noStroke();
   // draw startup dialog
   if (!userHasTriggeredAudio) {
-    fill(0, 0, 120);
+    fill(255);
     rect(0, 0, width, height);
     textSize(32);
     textAlign(CENTER);
@@ -154,8 +154,6 @@ void draw() {
     mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
     textFont(mono);
     fill(0);
-    text("Tap to start", width/2+1, height/2+1);
-    fill(255);
     text("Tap to start", width/2, height/2);
 
   }
@@ -179,22 +177,18 @@ void draw() {
   }
 
 
-  // draw helper line to visualize mouse direction (debug)
-  /*pushMatrix();
-   translate(width/2, height/2);
-   stroke(0, 255, 0);
-   line(0, 0, mouseVec.y, mouseVec.x);
-   popMatrix(); 
-   noStroke();*/
+  if (currentLevel != 0) {
+    // draw hole
+    pushMatrix();
+    translate(hole.x, hole.y);
+    //fill(0);
+    //ellipse(0, 0, ballRadius*5, ballRadius*5);
+    image(holeImg, 0, 0);
+    popMatrix();
+    image(startingPointImg, startingPoint.x, startingPoint.y);
 
-  // draw hole
-  pushMatrix();
-  translate(hole.x, hole.y);
-  //fill(0);
-  //ellipse(0, 0, ballRadius*5, ballRadius*5);
-  image(holeImg, 0, 0);
-  popMatrix();
-  image(startingPointImg, startingPoint.x, startingPoint.y);
+    drawLevel();
+  }
 
 
   if (inHole) {
@@ -221,39 +215,32 @@ void draw() {
 
     popMatrix();
   }
-
-  drawLevel();
-
-
-
-
+  
   // ball-specific code:
   hitDelayCounter++;
   for (i = 0; i < balls.length; i++) {
     Vec2 ballPos = physics.worldToScreen(balls[i].getWorldCenter());
     float speed = sqrt(abs((balls[i].getLinearVelocity().x) + sq(balls[i].getLinearVelocity().y)));
 
-    if (mouseY - pmouseY != 0 || mouseX - pmouseX != 0) {
-      /*checkIfTouched(ballPos.x, ballPos.y);*/
-    }
-
-    // gravity when close to the hole
-    if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= holeRadius * 1.5) {
-      float force = sq(ballRadius) * .001 / (dist(ballPos.x, ballPos.y, hole.x, hole.y) / (holeRadius / 4));
-      Vec2 impulse =  new Vec2((hole.x-ballPos.x), (hole.y-ballPos.y));
-      impulse.normalize();
-      impulse = impulse.mul(force);
-      balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
-    }
+    if (currentLevel != 0) {
+      // gravity when close to the hole
+      if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= holeRadius * 1.5) {
+        float force = sq(ballRadius) * .001 / (dist(ballPos.x, ballPos.y, hole.x, hole.y) / (holeRadius / 4));
+        Vec2 impulse =  new Vec2((hole.x-ballPos.x), (hole.y-ballPos.y));
+        impulse.normalize();
+        impulse = impulse.mul(force);
+        balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
+      }
 
 
-    // ball drops in hole
-    if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= holeRadius * .7  && speed <= 1.5) {
-      //println("Won  " + speed);
-      physics.getWorld().DestroyBody(balls[i]);
-      balls = concat(subset(balls, 0, i), subset(balls, i+1, balls.length));
-      inHole = true;
-      levelRunning = false;
+      // ball drops in hole
+      if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= holeRadius * .7  && speed <= 1.5) {
+        //println("Won  " + speed);
+        physics.getWorld().DestroyBody(balls[i]);
+        balls = concat(subset(balls, 0, i), subset(balls, i+1, balls.length));
+        inHole = true;
+        levelRunning = false;
+      }
     }
 
 
@@ -326,9 +313,9 @@ void draw() {
       text("Warten bis Ball hält...", mouseX, mouseY);
     }
   }
+  
 
-
-  if (!levelRunning) {
+  if (!levelRunning && currentLevel != 0) {
     textSize(32);
     textAlign(CENTER);
     PFont mono;
@@ -341,24 +328,25 @@ void draw() {
   }
 
 
-
-  // draw the hit counter
-  fill(255);
-  textSize(24);
-  textAlign(RIGHT);
-  PFont mono;
-  mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
-  textFont(mono);
-  text("Schläge: " + counter, width-20, 30);
-
-  // draw the level indicator
-  fill(255);
-  textSize(24);
-  textAlign(LEFT);
-  PFont mono;
-  mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
-  textFont(mono);
-  text("Bahn " + currentLevel, 20, 30);
+  if (currentLevel != 0) {
+    // draw the hit counter
+    fill(255);
+    textSize(24);
+    textAlign(RIGHT);
+    PFont mono;
+    mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
+    textFont(mono);
+    text("Schläge: " + counter, width-20, 30);
+  
+    // draw the level indicator
+    fill(255);
+    textSize(24);
+    textAlign(LEFT);
+    PFont mono;
+    mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
+    textFont(mono);
+    text("Bahn " + currentLevel, 20, 30);
+  }
 }
 
 
@@ -532,8 +520,6 @@ void mouseReleased() {
      crateSounds[i].play();
      }*/
     userHasTriggeredAudio = true;
-    buildLevel();
-    resetBallPosition();
   }
   if (!levelRunning) {
     startNextLevel();
@@ -544,12 +530,13 @@ void mouseReleased() {
 
 
 void startNextLevel() {
-  // reset if last level is reached 
-  if (currentLevel >= 10) currentLevel = 0;
 
   levelRunning = true;
   inHole = false;
   currentLevel++;
+
+  // reset if last level is reached 
+  if (currentLevel > 9) currentLevel = 1;
 
   // to do: maybe display the labyrinth after completing
   buildLevel();
@@ -670,6 +657,7 @@ void resetBallPosition() {
     Vec2 velocity = new Vec2(0, 0);
     balls[i].setLinearVelocity(velocity);
   }
+  
 }
 
 int[][] EckTeil = {
