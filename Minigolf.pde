@@ -154,7 +154,7 @@ void draw() {
     mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
     textFont(mono);
     fill(0);
-    text("Tap to start", width/2, height/2);
+    text("Klicken zum Starten", width/2, height/2);
 
   }
   // draw main background
@@ -275,7 +275,7 @@ void draw() {
         if (pointerWasOutside) {
           Vec2 impulse = new Vec2(mouseVec.y*.0004*sq(ballRadius), mouseVec.x*.0004*sq(ballRadius));
           balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
-          counter++;
+          if (currentLevel != 0) counter++;
           hitDelayCounter = 0;
           pointerWasOutside = false;
         }
@@ -322,9 +322,9 @@ void draw() {
     mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
     textFont(mono);
     fill(0);
-    text("Tap for next level", width/2+1, height/2+1);
+    text("Klicken für nächste Bahn", width/2+1, height/2+1);
     fill(255);
-    text("Tap for next level", width/2, height/2);
+    text("Klicken für nächste Bahn", width/2, height/2);
   }
 
 
@@ -491,14 +491,9 @@ void buildLevel() {
     buildPolygonBody(wallBottomRight);
     buildPolygonBody(deflectorTopLeft);
   }
+   
+  resetBall();
   
-  
-
-  //create a new ball
-  physics.setDensity(10.0);
-  Body newBall = physics.createCircle(width-100, height-100, ballRadius);
-  newBall.SetLinearDamping(1.2);
-  balls = append(balls, newBall);
 }
 
 
@@ -540,7 +535,6 @@ void startNextLevel() {
 
   // to do: maybe display the labyrinth after completing
   buildLevel();
-  resetBallPosition();
 }
 
 
@@ -585,47 +579,38 @@ void keyPressed() {
   if (keyCode == 49) {
     currentLevel = 1;
     buildLevel();
-    resetBallPosition();
   }
   if (keyCode == 50) {
     currentLevel = 2;
     buildLevel();
-    resetBallPosition();
   }
   if (keyCode == 51) {
     currentLevel = 3;
     buildLevel();
-    resetBallPosition();
   }
   if (keyCode == 52) {
     currentLevel = 4;
     buildLevel();
-    resetBallPosition();
   }
   if (keyCode == 53) {
     currentLevel = 5;
     buildLevel();
-    resetBallPosition();
   }
   if (keyCode == 54) {
     currentLevel = 6;
     buildLevel();
-    resetBallPosition();
   }
   if (keyCode == 55) {
     currentLevel = 7;
     buildLevel();
-    resetBallPosition();
   }
   if (keyCode == 56) {
     currentLevel = 8;
     buildLevel();
-    resetBallPosition();
   }
   if (keyCode == 57) {
     currentLevel = 9;
     buildLevel();
-    resetBallPosition();
   }
   if (key == 'a') {
     String[] params = {"q", "test"};
@@ -648,15 +633,18 @@ void collision(Body b1, Body b2, float impulse)
    }*/
 }
 
-void resetBallPosition() {
+void resetBall() {
   for (var i = 0; i < balls.length; i++) {
-    Vec2 position = new Vec2(startingPoint.x, startingPoint.y);
-    position = physics.screenToWorld(position);
-    balls[i].setPosition(position);
-
-    Vec2 velocity = new Vec2(0, 0);
-    balls[i].setLinearVelocity(velocity);
+    physics.getWorld().DestroyBody(balls[i]);
   }
+  balls.length = 0;
+
+  //create a new ball
+  physics.setDensity(10.0);
+  Body newBall = physics.createCircle(startingPoint.x, startingPoint.y, ballRadius);
+  newBall.SetLinearDamping(1.2);
+  balls = append(balls, newBall);
+  
   
 }
 
