@@ -192,7 +192,8 @@ void draw() {
 
 
   if (inHole) {
-    // draw balls
+    // draw ball in hole
+    noStroke();
     pushMatrix();
     translate(hole.x, hole.y);
     // Fancy ball graphics:
