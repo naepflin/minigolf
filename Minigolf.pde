@@ -245,6 +245,7 @@ void draw() {
 
 
     // draw balls
+    noStroke();
     pushMatrix();
     translate(ballPos.x, ballPos.y);
     // Fancy ball graphics:
