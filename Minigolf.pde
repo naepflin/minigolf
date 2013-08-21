@@ -640,7 +640,9 @@ void keyPressed() {
   }
   if (key == 'a') {
     String[] params = {"q", "test"};
-    post_to_url("http://google.com", params, "post");
+    
+    println(serialize(params));
+    //post_to_url("http://google.com", params, "post");
   }
   
 }
