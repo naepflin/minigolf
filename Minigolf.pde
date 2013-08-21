@@ -39,6 +39,7 @@ PVector hole;
 PVector startingPoint;
 
 int counter = 0;
+int timeCounter = 0;
 
 Boolean inHole = false;
 
@@ -142,6 +143,8 @@ void setup() {
 
 
 void draw() {
+  timeCounter++;
+  
   // draw backgrounds
   noStroke();
   // draw startup dialog
@@ -413,6 +416,11 @@ void drawLevel() {
     stroke(255);
     drawPolygon(fiveShape);
   }
+  if (currentLevel == 9) {
+    fill(255);
+    stroke(255);
+    drawPolygon(zeroShape);
+  }
 }
 
 void drawPolygon(float[][] shape) {
@@ -516,6 +524,12 @@ void buildLevel() {
     hole = new Vec2(340, 138);
     startingPoint = new Vec2(144, 561);
     buildPolygonBody(fiveShape);
+  }
+  // Level 9 physics
+  if (currentLevel == 9) {
+    hole = new Vec2(263, 615);
+    startingPoint = new Vec2(251, 145);
+    buildPolygonBody(zeroShape);
   }
 
   resetBall();
@@ -639,7 +653,7 @@ void keyPressed() {
     buildLevel();
   }
   if (key == 'a') {
-    String[] params = {"q", "test"};
+    String[] params = {"q", "test", 1};
     
     println(serialize(params));
     //post_to_url("http://google.com", params, "post");
