@@ -41,6 +41,9 @@ PVector startingPoint;
 int counter = 0;
 int timeCounter = 0;
 
+float[] gameData = new float[0];
+
+
 Boolean inHole = false;
 
 int hitDelay = 60;
@@ -283,6 +286,13 @@ void draw() {
           if (currentLevel != 0) counter++;
           hitDelayCounter = 0;
           pointerWasOutside = false;
+          
+          if (currentLevel != 0) {
+            gameData = append(gameData, timeCounter);
+            gameData = append(gameData, impulse.x);
+            gameData = append(gameData, impulse.y);
+            gameData = append(gameData, currentLevel);
+          }
         }
         textSize(16);
         textAlign(CENTER);
@@ -653,10 +663,10 @@ void keyPressed() {
     buildLevel();
   }
   if (key == 'a') {
-    String[] params = {"q", "test", 1};
     
-    println(serialize(params));
-    //post_to_url("http://google.com", params, "post");
+    String[] params = {"s", counter, "v", serialize(gameData)};
+    
+    post_to_url("endgame.php", params, "post");
   }
   
 }
