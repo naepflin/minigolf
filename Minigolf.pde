@@ -362,21 +362,14 @@ void drawLevel() {
   rect(width-60, 40, 20, height-80); //vertical bar
   
   
+  
+  
   if (currentLevel == 2) {
     fill(255);
-
-    float[][] shape = {
-      {
-        100, 100, 300, 300, 100, 300
-      }
-      , {
-        321, 251, 401, 248, 399, 375
-      }
-    };
-    drawPolygon(shape);
+    stroke(255);
+    drawPolygon(diagonalProtectors);
   }
-  
-  
+
   if (currentLevel == 3) {
     fill(255);
     stroke(255);
@@ -402,7 +395,19 @@ void drawLevel() {
     drawPolygon(wallBottomRight);
     drawPolygon(deflectorTopLeft);
   }
-  
+  if (currentLevel == 7) {
+    fill(255);
+
+    float[][] shape = {
+      {
+        100, 100, 300, 300, 100, 300
+      }
+      , {
+        321, 251, 401, 248, 399, 375
+      }
+    };
+    drawPolygon(shape);
+  }
 }
 
 void drawPolygon(float[][] shape) {
@@ -449,18 +454,9 @@ void buildLevel() {
   }
   // Level 2 physics
   if (currentLevel == 2) {
-    hole = new Vec2(400, 120);
-    startingPoint = new Vec2(100, 500);
-
-    float[][] polygons = {
-      {
-        100, 100, 300, 300, 100, 300
-      }
-      , {
-        321, 251, 401, 248, 399, 375
-      }
-    };
-    buildPolygonBody(polygons);
+    hole = new Vec2(width/2, height*.2);
+    startingPoint = new Vec2(width/2, height*.8);
+    buildPolygonBody(diagonalProtectors);
   }
   
   
@@ -493,7 +489,23 @@ void buildLevel() {
     buildPolygonBody(wallBottomRight);
     buildPolygonBody(deflectorTopLeft);
   }
-   
+
+  // Level 7 physics
+  if (currentLevel == 7) {
+    hole = new Vec2(400, 120);
+    startingPoint = new Vec2(100, 500);
+
+    float[][] polygons = {
+      {
+        100, 100, 300, 300, 100, 300
+      }
+      , {
+        321, 251, 401, 248, 399, 375
+      }
+    };
+    buildPolygonBody(polygons);
+  }
+
   resetBall();
   
 }
