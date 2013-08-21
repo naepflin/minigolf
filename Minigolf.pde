@@ -408,6 +408,11 @@ void drawLevel() {
     };
     drawPolygon(shape);
   }
+  if (currentLevel == 8) {
+    fill(255);
+    stroke(255);
+    drawPolygon(fiveShape);
+  }
 }
 
 void drawPolygon(float[][] shape) {
@@ -506,6 +511,13 @@ void buildLevel() {
     buildPolygonBody(polygons);
   }
 
+  // Level 8 physics
+  if (currentLevel == 8) {
+    hole = new Vec2(340, 138);
+    startingPoint = new Vec2(144, 561);
+    buildPolygonBody(fiveShape);
+  }
+
   resetBall();
   
 }
@@ -534,7 +546,7 @@ void mouseReleased() {
     startNextLevel();
   }
 
-//  println (mouseX + ", " + mouseY + ", ");
+  //println (mouseX + ", " + mouseY + ", ");
 }
 
 
