@@ -29,6 +29,8 @@ Body[] balls;
 PImage groundImg;
 PImage holeImg;
 PImage startingPointImg;
+PImage submitImg;
+PImage restartImg;
 
 float mousedir = 0;
 
@@ -73,6 +75,7 @@ int currentLevel = 0;
 
 void setup() {
   size(520, 800);
+  //size (window.innerWidth, window.innerHeight);
   //size(520, 500);
   frameRate(60);
   imageMode(CENTER);
@@ -102,7 +105,9 @@ void setup() {
   groundImg = loadImage("platz-k.jpg");
   holeImg = loadImage("hole.png");
   startingPointImg = loadImage("starting-point.png");
-
+  submitImg = loadImage("submit.png");
+  restartImg = loadImage("restart.png");
+  
   mouseVecHistory = new PVector[5];
   for (int i=0;i<mouseVecHistory.length;i++)
   {
@@ -152,8 +157,7 @@ void draw() {
   noStroke();
   // draw startup dialog
   if (!userHasTriggeredAudio) {
-    fill(255);
-    rect(0, 0, width, height);
+    background(255);
     textSize(32);
     textAlign(CENTER);
     PFont mono;
@@ -170,7 +174,10 @@ void draw() {
     image(groundImg, width/2, height/2);
     //background(207,116,108);
   }
-
+  
+  if (currentLevel == 10) {
+    drawLevel();
+  }
 
   // calculate mouse direction with a buffer based on vectors (average of recent mouse motions)
   if (mouseY - pmouseY != 0 || mouseX - pmouseX != 0) {
@@ -183,7 +190,7 @@ void draw() {
   }
 
 
-  if (currentLevel != 0) {
+  if (currentLevel != 0 && currentLevel != 10) {
     // draw hole
     pushMatrix();
     translate(hole.x, hole.y);
@@ -208,7 +215,7 @@ void draw() {
     pushMatrix();
     fill(0, 70);
     translate(.1*ballRadius, .1*ballRadius);
-    ellipse(0, 0, ballRadius*2.6, ballRadius*2.6);
+    ellipse(0, 0, ballRadius*2.2, ballRadius*2.2);
     popMatrix();
 
     // (main)
@@ -229,7 +236,7 @@ void draw() {
     Vec2 ballPos = physics.worldToScreen(balls[i].getWorldCenter());
     float speed = sqrt(abs((balls[i].getLinearVelocity().x) + sq(balls[i].getLinearVelocity().y)));
 
-    if (currentLevel != 0) {
+    if (currentLevel != 0 && currentLevel != 10) {
       // gravity when close to the hole
       if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= holeRadius * 1.5) {
         float force = sq(ballRadius) * .001 / (dist(ballPos.x, ballPos.y, hole.x, hole.y) / (holeRadius / 4));
@@ -261,7 +268,7 @@ void draw() {
     pushMatrix();
     fill(0, 70);
     translate(.1*ballRadius, .1*ballRadius);
-    ellipse(0, 0, ballRadius*2.6, ballRadius*2.6);
+    ellipse(0, 0, ballRadius*2.2, ballRadius*2.2);
     popMatrix();
 
     // (main)
@@ -283,11 +290,11 @@ void draw() {
         if (pointerWasOutside) {
           Vec2 impulse = new Vec2(mouseVec.y*.0004*sq(ballRadius), mouseVec.x*.0004*sq(ballRadius));
           balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
-          if (currentLevel != 0) counter++;
+          if (currentLevel != 0 && currentLevel != 10) counter++;
           hitDelayCounter = 0;
           pointerWasOutside = false;
           
-          if (currentLevel != 0) {
+          if (currentLevel != 0 && currentLevel != 10) {
             gameData = append(gameData, timeCounter);
             gameData = append(gameData, impulse.x);
             gameData = append(gameData, impulse.y);
@@ -330,7 +337,7 @@ void draw() {
   }
   
 
-  if (!levelRunning && currentLevel != 0) {
+  if (!levelRunning && currentLevel != 0 && currentLevel != 10) {
     textSize(32);
     textAlign(CENTER);
     PFont mono;
@@ -343,7 +350,7 @@ void draw() {
   }
 
 
-  if (currentLevel != 0) {
+  if (currentLevel != 0 && currentLevel != 10) {
     // draw the hit counter
     fill(255);
     textSize(24);
@@ -431,6 +438,23 @@ void drawLevel() {
     stroke(255);
     drawPolygon(zeroShape);
   }
+  if (currentLevel == 10) {
+    fill(255);
+    stroke(255);
+    background(255);
+
+    textSize(32);
+    textAlign(CENTER);
+    PFont mono;
+    mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
+    textFont(mono);
+    fill(0);
+    text("Resultat: " + counter + " Schläge", width/2, height/2);
+    
+    image(restartImg, width/2, height/2+50);
+    image(submitImg, width/2, height/2+100);
+
+  }
 }
 
 void drawPolygon(float[][] shape) {
@@ -443,6 +467,12 @@ void drawPolygon(float[][] shape) {
   }
 }
 
+void restart() {
+  currentLevel = 1;
+  counter = 0;
+  timeCounter = 0;
+  buildLevel();
+}
 
 void buildLevel() {
   // delete the old block bodies from the world
@@ -566,10 +596,20 @@ void mouseReleased() {
      }*/
     userHasTriggeredAudio = true;
   }
+ if (currentLevel == 10) {
+   if (mouseX > 149 && mouseX < 368 && mouseY > 430 && mouseY < 464) {
+     restart();
+   }
+   if (mouseX > 51 && mouseX < 468 && mouseY > 480 && mouseY < 516) {
+     submitResult();
+   }
+ }
+
+
   if (!levelRunning) {
     startNextLevel();
   }
-
+  
   //println (mouseX + ", " + mouseY + ", ");
 }
 
@@ -580,8 +620,6 @@ void startNextLevel() {
   inHole = false;
   currentLevel++;
 
-  // reset if last level is reached 
-  if (currentLevel > 9) currentLevel = 1;
 
   // to do: maybe display the labyrinth after completing
   buildLevel();
@@ -671,6 +709,11 @@ void keyPressed() {
   
 }
 
+void submitResult() {
+  String[] params = {"s", counter, "v", serialize(gameData)};
+  
+  post_to_url("endgame.php", params, "post");
+}
 
 void collision(Body b1, Body b2, float impulse)
 {
