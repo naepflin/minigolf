@@ -307,7 +307,7 @@ void draw() {
         mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
         textFont(mono);
         fill(0);
-        text("Schläger ausholen und schiessen", mouseX, mouseY);
+        text("Schläger ausholen und schiessen", mouseX, mouseY-50);
       }
       else {
         if (pmouseX != mouseX && pmouseY != mouseY) {
@@ -332,7 +332,7 @@ void draw() {
       mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
       textFont(mono);
       fill(0);
-      text("Warten bis Ball hält...", mouseX, mouseY);
+      text("Warten bis Ball hält...", mouseX, mouseY-50);
     }
   }
   
