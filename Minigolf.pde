@@ -57,6 +57,10 @@ Boolean pointerWasOutside = false;
 CollisionDetector detector; 
 
 
+float mouseXTr;
+float mouseYTr;
+float pmouseXTr;
+float pmouseYTr;
 
 
 // this is used to remember that the user 
@@ -77,6 +81,9 @@ void setup() {
   size(520, 800);
   //size (window.innerWidth, window.innerHeight);
   //size(520, 500);
+  
+  OnResizeDocument();
+  
   frameRate(60);
   imageMode(CENTER);
 
@@ -151,6 +158,13 @@ void setup() {
 
 
 void draw() {
+  float widthRatio = width / getCanvasWidth();
+  mouseXTr = widthRatio * mouseX;
+  pmouseXTr = widthRatio * pmouseX;
+  float heightRatio = height / getCanvasHeight();
+  mouseYTr = heightRatio * mouseY;
+  pmouseYTr = heightRatio * pmouseY;
+    
   timeCounter++;
   
   // draw backgrounds
@@ -180,8 +194,8 @@ void draw() {
   }
 
   // calculate mouse direction with a buffer based on vectors (average of recent mouse motions)
-  if (mouseY - pmouseY != 0 || mouseX - pmouseX != 0) {
-    mouseVecHistory = append(mouseVecHistory, new PVector(mouseY - pmouseY, mouseX - pmouseX));
+  if (mouseYTr != pmouseYTr || mouseXTr != pmouseXTr) {
+    mouseVecHistory = append(mouseVecHistory, new PVector(mouseYTr - pmouseYTr, mouseXTr - pmouseXTr));
     mouseVecHistory = reverse(shorten(reverse(mouseVecHistory)));
     mouseVec.set(0, 0);
     for (i = 0; i < mouseVecHistory.length; i++) {
@@ -286,7 +300,7 @@ void draw() {
     // apply and count hit
     if (hitDelayCounter > hitDelay && speed <= .075 * ballRadius)
     {
-      if (dist(mouseX, mouseY, ballPos.x, ballPos.y) <= 30) {
+      if (dist(mouseXTr, mouseYTr, ballPos.x, ballPos.y) <= 30) {
         if (pointerWasOutside) {
           Vec2 impulse = new Vec2(mouseVec.y*.0004*sq(ballRadius), mouseVec.x*.0004*sq(ballRadius));
           balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
@@ -301,23 +315,25 @@ void draw() {
             gameData = append(gameData, currentLevel);
           }
         }
-        textSize(16);
-        textAlign(CENTER);
-        PFont mono;
-        mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
-        textFont(mono);
-        fill(0);
-        text("Schläger ausholen und schiessen", mouseX, mouseY-50);
+        else {
+          textSize(16);
+          textAlign(CENTER);
+          PFont mono;
+          mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
+          textFont(mono);
+          fill(0);
+          text("Schläger ausholen und schiessen", mouseXTr, mouseYTr-50);
+        }
       }
       else {
-        if (pmouseX != mouseX && pmouseY != mouseY) {
+        if (pmouseXTr != mouseXTr && pmouseYTr != mouseYTr) {
           pointerWasOutside = true;
         }
       }
 
       // draw the putter
       pushMatrix();
-      translate(mouseX, mouseY);
+      translate(mouseXTr, mouseYTr);
       rotate(atan(mouseVec.x/mouseVec.y));
       fill(255);
       stroke(0);
@@ -332,7 +348,7 @@ void draw() {
       mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
       textFont(mono);
       fill(0);
-      text("Warten bis Ball hält...", mouseX, mouseY-50);
+      text("Warten bis Ball hält...", mouseXTr, mouseYTr-50);
     }
   }
   
@@ -597,10 +613,10 @@ void mouseReleased() {
     userHasTriggeredAudio = true;
   }
  if (currentLevel == 10) {
-   if (mouseX > 149 && mouseX < 368 && mouseY > 430 && mouseY < 464) {
+   if (mouseXTr > 149 && mouseXTr < 368 && mouseYTr > 430 && mouseYTr < 464) {
      restart();
    }
-   if (mouseX > 51 && mouseX < 468 && mouseY > 480 && mouseY < 516) {
+   if (mouseXTr > 51 && mouseXTr < 468 && mouseYTr > 480 && mouseYTr < 516) {
      submitResult();
    }
  }
@@ -610,7 +626,7 @@ void mouseReleased() {
     startNextLevel();
   }
   
-  //println (mouseX + ", " + mouseY + ", ");
+  //println (mouseXTr + ", " + mouseYTr + ", ");
 }
 
 
