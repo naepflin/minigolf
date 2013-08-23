@@ -311,7 +311,7 @@ void draw() {
 
 
     // apply and count hit
-    if (hitDelayCounter > hitDelay && speed <= .075 * ballRadius)
+    if (hitDelayCounter > hitDelay && speed <= .025 * ballRadius)
     {
       if (dist(mouseXTr, mouseYTr, ballPos.x, ballPos.y) <= 30) {
         if (pointerWasOutside) {
@@ -322,7 +322,7 @@ void draw() {
           pointerWasOutside = false;
           
           hitSound.cue(0);
-          hitSound.volume(sqrt(sqrt(sq(mouseVec.x) + sq(mouseVec.y)))/2);
+          hitSound.volume(sqrt(sqrt(sq(mouseVec.x) + sq(mouseVec.y))));
           hitSound.play();
 
           
