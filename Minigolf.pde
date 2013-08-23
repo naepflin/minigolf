@@ -13,6 +13,8 @@ import org.jbox2d.dynamics.*;
 
 Maxim maxim;
 AudioPlayer[] crateSounds;
+AudioPlayer holeSound;
+AudioPlayer hitSound;
 
 int howManyElements = 10;
 int whichSoundLooper = 0;
@@ -152,6 +154,9 @@ void setup() {
     crateSounds[i].setLooping(false);
   }
 
+  holeSound = maxim.loadFile("hole.mp3");
+  hitSound = maxim.loadFile("hit.mp3");
+
   // collision callbacks
   detector = new CollisionDetector (physics, this);
 }
@@ -268,6 +273,9 @@ void draw() {
         balls = concat(subset(balls, 0, i), subset(balls, i+1, balls.length));
         inHole = true;
         levelRunning = false;
+        holeSound.cue(0);
+        holeSound.volume(5);
+        holeSound.play();
       }
     }
 
@@ -307,6 +315,11 @@ void draw() {
           if (currentLevel != 0 && currentLevel != 10) counter++;
           hitDelayCounter = 0;
           pointerWasOutside = false;
+          
+          hitSound.cue(0);
+          hitSound.volume(sqrt(sqrt(sq(mouseVec.x) + sq(mouseVec.y)))/2);
+          hitSound.play();
+
           
           if (currentLevel != 0 && currentLevel != 10) {
             gameData = append(gameData, timeCounter);
