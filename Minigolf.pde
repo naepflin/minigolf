@@ -34,8 +34,6 @@ PImage startingPointImg;
 PImage submitImg;
 PImage restartImg;
 
-float mousedir = 0;
-
 PVector [] mouseVecHistory;
 PVector mouseVec;
 
@@ -116,6 +114,7 @@ void setup() {
   startingPointImg = loadImage("starting-point.png");
   submitImg = loadImage("submit.png");
   restartImg = loadImage("restart.png");
+  restartIconImg = loadImage("restart-icon.png");
   
   mouseVecHistory = new PVector[5];
   for (int i=0;i<mouseVecHistory.length;i++)
@@ -409,6 +408,10 @@ void draw() {
 
 void drawLevel() {
   
+  
+  image(restartIconImg, width-60, height-20);
+
+  
   //walls
   fill(255);
   rect(40, 40, width-80, 20); //horizontal bar
@@ -506,6 +509,10 @@ void restart() {
   currentLevel = 1;
   counter = 0;
   timeCounter = 0;
+  inHole = false;
+  hitDelayCounter = hitDelay;
+  pointerWasOutside = false;
+  levelRunning = true;
   buildLevel();
 }
 
@@ -635,7 +642,7 @@ void mouseDragged() {
 
 
 void mouseReleased() {
-// on iOS, the first audio playback has to be triggered directly by a user interaction
+  // on iOS, the first audio playback has to be triggered directly by a user interaction
   if (!userHasTriggeredAudio) {
     for (int i=0;i<5;i++) {
       wallSounds[i].volume(0);
@@ -644,7 +651,7 @@ void mouseReleased() {
     userHasTriggeredAudio = true;
   }
   
-// final screen button control:
+ // final screen button control:
  if (currentLevel == 10) {
    if (mouseXTr > 149 && mouseXTr < 368 && mouseYTr > 430 && mouseYTr < 464) {
      restart();
@@ -653,14 +660,14 @@ void mouseReleased() {
      submitResult();
    }
  }
-
-// start screen: user click starts next level
+ 
+  // start screen: user click starts next level
   if (!levelRunning) {
     startNextLevel();
   }
 
   
-// for touch-controlled devices: empty mouse direction buffer when touch is released
+  // for touch-controlled devices: empty mouse direction buffer when touch is released
   if (Modernizr.touch) {
     for (int i=0;i<mouseVecHistory.length;i++)
     {
@@ -671,6 +678,15 @@ void mouseReleased() {
   
   
   //println (mouseXTr + ", " + mouseYTr + ", ");
+}
+
+void mouseClicked() {
+// restart button control:
+ if (currentLevel != 10 && currentLevel != 0) {
+   if (mouseXTr > 448 && mouseXTr < 472 && mouseYTr > 770 && mouseYTr < 794) {
+     restart();
+   }
+ }
 }
 
 
