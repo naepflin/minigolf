@@ -12,17 +12,17 @@ import org.jbox2d.dynamics.*;
 // audio stuff
 
 Maxim maxim;
-AudioPlayer[] crateSounds;
+AudioPlayer[] wallSounds;
 AudioPlayer holeSound;
 AudioPlayer hitSound;
+AudioPlayer drivebySound;
 
 int howManyElements = 10;
 int whichSoundLooper = 0;
 float ballRadius = 10;
 float holeRadius = 20;
 
-Physics physics; // The physics handler: we'll see more of this later
-// rigid bodies for the droid and two crates
+Physics physics;
 
 Body[] block = new Body[0];
 
@@ -147,15 +147,15 @@ void setup() {
 
   // init sounds
   maxim = new Maxim(this);
-  // now an array of crate sounds
-  crateSounds = new AudioPlayer[balls.length];
-  for (int i=0;i<balls.length;i++) {
-    crateSounds[i] = maxim.loadFile("crate2.wav");
-    crateSounds[i].setLooping(false);
+
+  wallSounds = new AudioPlayer[balls.length];
+  for (int i=0;i<5;i++) {
+    wallSounds[i] = maxim.loadFile("wall.mp3");
   }
 
   holeSound = maxim.loadFile("hole.mp3");
   hitSound = maxim.loadFile("hit.mp3");
+  drivebySound = maxim.loadFile("driveby.mp3");
 
   // collision callbacks
   detector = new CollisionDetector (physics, this);
@@ -263,7 +263,12 @@ void draw() {
         impulse.normalize();
         impulse = impulse.mul(force);
         balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
+        
+        drivebySound.volume(5);
+        drivebySound.play();
+
       }
+      else drivebySound.cue(0);
 
 
       // ball drops in hole
@@ -274,8 +279,9 @@ void draw() {
         inHole = true;
         levelRunning = false;
         holeSound.cue(0);
-        holeSound.volume(5);
+        holeSound.volume(15);
         holeSound.play();
+        drivebySound.stop();
       }
     }
 
@@ -632,10 +638,10 @@ void mouseDragged() {
 void mouseReleased() {
 // on iOS, the first audio playback has to be triggered directly by a user interaction
   if (!userHasTriggeredAudio) {
-    /*for (int i=0;i<howManyElements;i++) {
-     crateSounds[i].volume(0);
-     crateSounds[i].play();
-     }*/
+    for (int i=0;i<5;i++) {
+      wallSounds[i].volume(0);
+      wallSounds[i].play();
+    }
     userHasTriggeredAudio = true;
   }
   
@@ -772,15 +778,12 @@ void submitResult() {
 
 void collision(Body b1, Body b2, float impulse)
 {
-  /*  crateSounds[whichSoundLooper].cue(0);
-   //crateSounds[whichSoundLooper].speed(0.25 + (impulse / 250));// 10000 as the crates move slower??
-   crateSounds[whichSoundLooper].volume(impulse);
-   crateSounds[whichSoundLooper].play();
+   wallSounds[whichSoundLooper].cue(0);
+   wallSounds[whichSoundLooper].volume(sqrt(impulse));
+   wallSounds[whichSoundLooper].play();
    
    whichSoundLooper++;
-   if (whichSoundLooper >= balls.length) {
-   whichSoundLooper = 0;
-   }*/
+   if (whichSoundLooper >= 5) whichSoundLooper = 0;
 }
 
 void resetBall() {
