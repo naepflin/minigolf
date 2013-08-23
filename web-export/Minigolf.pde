@@ -33,6 +33,8 @@ PImage holeImg;
 PImage startingPointImg;
 PImage submitImg;
 PImage restartImg;
+PImage restartIconImg;
+PImage hillImg;
 
 PVector [] mouseVecHistory;
 PVector mouseVec;
@@ -115,6 +117,7 @@ void setup() {
   submitImg = loadImage("submit.png");
   restartImg = loadImage("restart.png");
   restartIconImg = loadImage("restart-icon.png");
+  hillImg = loadImage("hill.jpg");
   
   mouseVecHistory = new PVector[5];
   for (int i=0;i<mouseVecHistory.length;i++)
@@ -209,13 +212,8 @@ void draw() {
 
 
   if (currentLevel != 0 && currentLevel != 10) {
-    // draw hole
-    pushMatrix();
-    translate(hole.x, hole.y);
-    //fill(0);
-    //ellipse(0, 0, ballRadius*5, ballRadius*5);
-    image(holeImg, 0, 0);
-    popMatrix();
+    // draw hole and starting point
+    image(holeImg, hole.x, hole.y);
     image(startingPointImg, startingPoint.x, startingPoint.y);
 
     drawLevel();
@@ -438,7 +436,8 @@ void drawLevel() {
   if (currentLevel == 4) {
     fill(255);
     stroke(255);
-    drawPolygon(EckTeil);
+    image(hillImg, width/2, 240);
+    image(holeImg, hole.x, hole.y);
   }
 
   if (currentLevel == 5) {
@@ -565,9 +564,8 @@ void buildLevel() {
 
   // Level 4 physics
   if (currentLevel == 4) {
-    hole = new Vec2(400, 120);
-    startingPoint = new Vec2(100, 500);
-    buildPolygonBody(EckTeil);
+    hole = new Vec2(width/2, 240);
+    startingPoint = new Vec2(width/2, height * .8);
   }
 
   // Level 5 physics
