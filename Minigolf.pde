@@ -118,9 +118,9 @@ void setup() {
   mouseVecHistory = new PVector[5];
   for (int i=0;i<mouseVecHistory.length;i++)
   {
-    mouseVecHistory[i]= new PVector(1, 1);
+    mouseVecHistory[i]= new PVector(0, 0);
   }
-  mouseVec = new PVector(1, 1);
+  mouseVec = new PVector(0, 0);
 
   hole = new PVector(width/2, height/5);
   startingPoint = new PVector(width/2, height*.8);
@@ -390,6 +390,8 @@ void draw() {
 
 
 void drawLevel() {
+  
+  if (Modernizr.touch) println("touch");
   //walls
   fill(255);
   rect(40, 40, width-80, 20); //horizontal bar
