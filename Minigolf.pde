@@ -253,8 +253,7 @@ void draw() {
   hitDelayCounter++;
   for (i = 0; i < balls.length; i++) {
     Vec2 ballPos = physics.worldToScreen(balls[i].getWorldCenter());
-    float speed = sqrt(abs((balls[i].getLinearVelocity().x) + sq(balls[i].getLinearVelocity().y)));
-
+    float speed = sqrt(sq((balls[i].getLinearVelocity().x) + sq(balls[i].getLinearVelocity().y)));
     if (currentLevel != 0 && currentLevel != 10) {
       // gravity when close to the hole
       if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= holeRadius * 1.5) {
@@ -264,7 +263,7 @@ void draw() {
         impulse = impulse.mul(force);
         balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
         
-        drivebySound.volume(5);
+        drivebySound.volume(20);
         drivebySound.play();
 
       }
@@ -272,7 +271,7 @@ void draw() {
 
 
       // ball drops in hole
-      if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= holeRadius * .7  && speed <= 1.5) {
+      if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= holeRadius * .7  && speed <= 2) {
         //println("Won  " + speed);
         physics.getWorld().DestroyBody(balls[i]);
         balls = concat(subset(balls, 0, i), subset(balls, i+1, balls.length));
