@@ -193,8 +193,8 @@ void draw() {
     drawLevel();
   }
 
-  // calculate mouse direction with a buffer based on vectors (average of recent mouse motions)
-  if (mouseYTr != pmouseYTr || mouseXTr != pmouseXTr) {
+  // for mouse-controlled devices: calculate mouse direction with a buffer based on vectors (average of recent mouse motions)
+  if ((mouseYTr != pmouseYTr || mouseXTr != pmouseXTr) && !Modernizr.touch) {
     mouseVecHistory = append(mouseVecHistory, new PVector(mouseYTr - pmouseYTr, mouseXTr - pmouseXTr));
     mouseVecHistory = reverse(shorten(reverse(mouseVecHistory)));
     mouseVec.set(0, 0);
@@ -391,7 +391,6 @@ void draw() {
 
 void drawLevel() {
   
-  if (Modernizr.touch) println("touch");
   //walls
   fill(255);
   rect(40, 40, width-80, 20); //horizontal bar
@@ -602,11 +601,23 @@ void buildPolygonBody(float[][] polygons) {
 }
 
 
+void mouseDragged() {
+  // for touch-controlled devices: calculate mouse direction with a buffer based on vectors (average of recent mouse motions)
+  if ((mouseYTr != pmouseYTr || mouseXTr != pmouseXTr) && Modernizr.touch) {
+    mouseVecHistory = append(mouseVecHistory, new PVector(mouseYTr - pmouseYTr, mouseXTr - pmouseXTr));
+    mouseVecHistory = reverse(shorten(reverse(mouseVecHistory)));
+    mouseVec.set(0, 0);
+    for (i = 0; i < mouseVecHistory.length; i++) {
+      mouseVec.add(mouseVecHistory[i]);
+    }
+  }
+}
 
 
 
-// on iOS, the first audio playback has to be triggered directly by a user interaction
+
 void mouseReleased() {
+// on iOS, the first audio playback has to be triggered directly by a user interaction
   if (!userHasTriggeredAudio) {
     /*for (int i=0;i<howManyElements;i++) {
      crateSounds[i].volume(0);
@@ -614,6 +625,8 @@ void mouseReleased() {
      }*/
     userHasTriggeredAudio = true;
   }
+  
+// final screen button control:
  if (currentLevel == 10) {
    if (mouseXTr > 149 && mouseXTr < 368 && mouseYTr > 430 && mouseYTr < 464) {
      restart();
@@ -623,10 +636,21 @@ void mouseReleased() {
    }
  }
 
-
+// start screen: user click starts next level
   if (!levelRunning) {
     startNextLevel();
   }
+
+  
+// for touch-controlled devices: empty mouse direction buffer when touch is released
+  if (Modernizr.touch) {
+    for (int i=0;i<mouseVecHistory.length;i++)
+    {
+      mouseVecHistory[i]= new PVector(0, 0);
+    }
+    pointerWasOutside = false;
+  }
+  
   
   //println (mouseXTr + ", " + mouseYTr + ", ");
 }
