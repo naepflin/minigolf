@@ -122,8 +122,6 @@ void setup() {
   restartImg = loadImage("restart.png");
   restartIconImg = loadImage("restart-icon.png");
   hillImg = loadImage("hill.jpg");
-  hillLeftImg = loadImage("hillLeft.jpg");
-  hillRightImg = loadImage("hillRight.jpg");
   
   mouseVecHistory = new PVector[5];
   for (int i=0;i<mouseVecHistory.length;i++)
