@@ -266,14 +266,14 @@ void draw() {
       }
       else drivebySound.cue(0);
       
-      if (currentLevel == 4 && dist(ballPos.x, ballPos.y, hole.x, hole.y) > 48 && dist(ballPos.x, ballPos.y, hole.x, hole.y) < 145) {
+      if (currentLevel == 4 && dist(ballPos.x, ballPos.y, hole.x, hole.y) > 52 && dist(ballPos.x, ballPos.y, hole.x, hole.y) < 145) {
         float force = 0.06;
         Vec2 impulse =  new Vec2(-(hole.x-ballPos.x), -(hole.y-ballPos.y));
         impulse.normalize();
         impulse = impulse.mul(force);
         balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
       }
-      if (currentLevel == 4 && dist(ballPos.x, ballPos.y, hole.x, hole.y) <= 48 && dist(ballPos.x, ballPos.y, hole.x, hole.y) > holeRadius * 1.5) {
+      if (currentLevel == 4 && dist(ballPos.x, ballPos.y, hole.x, hole.y) <= 52 && dist(ballPos.x, ballPos.y, hole.x, hole.y) > holeRadius * 1.5) {
         float force = 0.02;
         Vec2 impulse =  new Vec2((hole.x-ballPos.x), (hole.y-ballPos.y));
         impulse.normalize();
