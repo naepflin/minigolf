@@ -35,6 +35,9 @@ PImage submitImg;
 PImage restartImg;
 PImage restartIconImg;
 PImage hillImg;
+PImage hillLeftImg;
+PImage hillRightImg;
+PImage ground5Img;
 
 PVector [] mouseVecHistory;
 PVector mouseVec;
@@ -112,12 +115,15 @@ void setup() {
 
   physics.setRestitution(.4);
   groundImg = loadImage("platz-k.jpg");
+  ground5Img = loadImage("platz-k5.jpg");
   holeImg = loadImage("hole.png");
   startingPointImg = loadImage("starting-point.png");
   submitImg = loadImage("submit.png");
   restartImg = loadImage("restart.png");
   restartIconImg = loadImage("restart-icon.png");
   hillImg = loadImage("hill.jpg");
+  hillLeftImg = loadImage("hillLeft.jpg");
+  hillRightImg = loadImage("hillRight.jpg");
   
   mouseVecHistory = new PVector[5];
   for (int i=0;i<mouseVecHistory.length;i++)
@@ -190,15 +196,11 @@ void draw() {
   }
   // draw main background
   else {
-    int alpha = 255;
-    fill(0, alpha);
     image(groundImg, width/2, height/2);
-    //background(207,116,108);
+    if (currentLevel == 5) image(ground5Img, width/2, height/2);
+    
   }
   
-  if (currentLevel == 10) {
-    drawLevel();
-  }
 
   // for mouse-controlled devices: calculate mouse direction with a buffer based on vectors (average of recent mouse motions)
   if ((mouseYTr != pmouseYTr || mouseXTr != pmouseXTr) && !Modernizr.touch) {
@@ -215,9 +217,9 @@ void draw() {
     // draw hole and starting point
     image(holeImg, hole.x, hole.y);
     image(startingPointImg, startingPoint.x, startingPoint.y);
-
-    drawLevel();
   }
+  
+  drawLevel();
 
 
   if (inHole) {
@@ -266,16 +268,31 @@ void draw() {
       }
       else drivebySound.cue(0);
       
-      if (currentLevel == 4 && dist(ballPos.x, ballPos.y, hole.x, hole.y) > 42 && dist(ballPos.x, ballPos.y, hole.x, hole.y) < 139) {
-        float force = 0.1;
+      if (currentLevel == 4 && dist(ballPos.x, ballPos.y, hole.x, hole.y) > 48 && dist(ballPos.x, ballPos.y, hole.x, hole.y) < 145) {
+        float force = 0.06;
         Vec2 impulse =  new Vec2(-(hole.x-ballPos.x), -(hole.y-ballPos.y));
         impulse.normalize();
         impulse = impulse.mul(force);
         balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
       }
-      if (currentLevel == 4 && dist(ballPos.x, ballPos.y, hole.x, hole.y) <= 42) {
-        float force = 0.1;
+      if (currentLevel == 4 && dist(ballPos.x, ballPos.y, hole.x, hole.y) <= 48 && dist(ballPos.x, ballPos.y, hole.x, hole.y) > holeRadius * 1.5) {
+        float force = 0.02;
         Vec2 impulse =  new Vec2((hole.x-ballPos.x), (hole.y-ballPos.y));
+        impulse.normalize();
+        impulse = impulse.mul(force);
+        balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
+      }
+      
+      if (currentLevel == 5 && dist(ballPos.x, ballPos.y, 50, 273) < 145) {
+        float force = 0.2;
+        Vec2 impulse =  new Vec2(1, -.5);
+        impulse.normalize();
+        impulse = impulse.mul(force);
+        balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
+      }
+      if (currentLevel == 5 && dist(ballPos.x, ballPos.y, 474, 465) < 145) {
+        float force = 0.07;
+        Vec2 impulse =  new Vec2(-1, -0.2);
         impulse.normalize();
         impulse = impulse.mul(force);
         balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
@@ -451,14 +468,15 @@ void drawLevel() {
   if (currentLevel == 4) {
     fill(255);
     stroke(255);
-    image(hillImg, width/2, 240);
+    image(hillImg, hole.x, hole.y);
     image(holeImg, hole.x, hole.y);
   }
 
   if (currentLevel == 5) {
     fill(255);
     stroke(255);
-    drawPolygon(star);
+    drawPolygon(sRechteBande);
+    drawPolygon(sLinkeBande);
   }
   
   if (currentLevel == 6) {
@@ -528,6 +546,7 @@ void restart() {
   pointerWasOutside = false;
   levelRunning = true;
   buildLevel();
+  gameData.length = 0;
 }
 
 void buildLevel() {
@@ -579,15 +598,16 @@ void buildLevel() {
 
   // Level 4 physics
   if (currentLevel == 4) {
-    hole = new Vec2(width/2, 240);
+    hole = new Vec2(width/2, 350);
     startingPoint = new Vec2(width/2, height * .8);
   }
 
   // Level 5 physics
   if (currentLevel == 5) {
     hole = new Vec2(400, 120);
-    startingPoint = new Vec2(100, 500);
-    buildPolygonBody(star);
+    startingPoint = new Vec2(155, 652);
+    buildPolygonBody(sLinkeBande);
+    buildPolygonBody(sRechteBande);
   }
   
   // Level 6 physics
@@ -795,6 +815,10 @@ void keyPressed() {
     
     post_to_url("endgame.php", params, "post");
   }
+  if (key == 'r') {
+    restart();
+  }
+
   
 }
 

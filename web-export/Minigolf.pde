@@ -35,6 +35,9 @@ PImage submitImg;
 PImage restartImg;
 PImage restartIconImg;
 PImage hillImg;
+PImage hillLeftImg;
+PImage hillRightImg;
+PImage ground5Img;
 
 PVector [] mouseVecHistory;
 PVector mouseVec;
@@ -112,12 +115,15 @@ void setup() {
 
   physics.setRestitution(.4);
   groundImg = loadImage("platz-k.jpg");
+  ground5Img = loadImage("platz-k5.jpg");
   holeImg = loadImage("hole.png");
   startingPointImg = loadImage("starting-point.png");
   submitImg = loadImage("submit.png");
   restartImg = loadImage("restart.png");
   restartIconImg = loadImage("restart-icon.png");
   hillImg = loadImage("hill.jpg");
+  hillLeftImg = loadImage("hillLeft.jpg");
+  hillRightImg = loadImage("hillRight.jpg");
   
   mouseVecHistory = new PVector[5];
   for (int i=0;i<mouseVecHistory.length;i++)
@@ -190,15 +196,11 @@ void draw() {
   }
   // draw main background
   else {
-    int alpha = 255;
-    fill(0, alpha);
     image(groundImg, width/2, height/2);
-    //background(207,116,108);
+    if (currentLevel == 5) image(ground5Img, width/2, height/2);
+    
   }
   
-  if (currentLevel == 10) {
-    drawLevel();
-  }
 
   // for mouse-controlled devices: calculate mouse direction with a buffer based on vectors (average of recent mouse motions)
   if ((mouseYTr != pmouseYTr || mouseXTr != pmouseXTr) && !Modernizr.touch) {
@@ -215,9 +217,9 @@ void draw() {
     // draw hole and starting point
     image(holeImg, hole.x, hole.y);
     image(startingPointImg, startingPoint.x, startingPoint.y);
-
-    drawLevel();
   }
+  
+  drawLevel();
 
 
   if (inHole) {
@@ -266,16 +268,31 @@ void draw() {
       }
       else drivebySound.cue(0);
       
-      if (currentLevel == 4 && dist(ballPos.x, ballPos.y, hole.x, hole.y) > 42 && dist(ballPos.x, ballPos.y, hole.x, hole.y) < 139) {
-        float force = 0.1;
+      if (currentLevel == 4 && dist(ballPos.x, ballPos.y, hole.x, hole.y) > 48 && dist(ballPos.x, ballPos.y, hole.x, hole.y) < 145) {
+        float force = 0.06;
         Vec2 impulse =  new Vec2(-(hole.x-ballPos.x), -(hole.y-ballPos.y));
         impulse.normalize();
         impulse = impulse.mul(force);
         balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
       }
-      if (currentLevel == 4 && dist(ballPos.x, ballPos.y, hole.x, hole.y) <= 42) {
-        float force = 0.1;
+      if (currentLevel == 4 && dist(ballPos.x, ballPos.y, hole.x, hole.y) <= 48 && dist(ballPos.x, ballPos.y, hole.x, hole.y) > holeRadius * 1.5) {
+        float force = 0.02;
         Vec2 impulse =  new Vec2((hole.x-ballPos.x), (hole.y-ballPos.y));
+        impulse.normalize();
+        impulse = impulse.mul(force);
+        balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
+      }
+      
+      if (currentLevel == 5 && dist(ballPos.x, ballPos.y, 50, 273) < 145) {
+        float force = 0.2;
+        Vec2 impulse =  new Vec2(1, -.5);
+        impulse.normalize();
+        impulse = impulse.mul(force);
+        balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
+      }
+      if (currentLevel == 5 && dist(ballPos.x, ballPos.y, 474, 465) < 145) {
+        float force = 0.07;
+        Vec2 impulse =  new Vec2(-1, -0.2);
         impulse.normalize();
         impulse = impulse.mul(force);
         balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
@@ -451,14 +468,15 @@ void drawLevel() {
   if (currentLevel == 4) {
     fill(255);
     stroke(255);
-    image(hillImg, width/2, 240);
+    image(hillImg, hole.x, hole.y);
     image(holeImg, hole.x, hole.y);
   }
 
   if (currentLevel == 5) {
     fill(255);
     stroke(255);
-    drawPolygon(star);
+    drawPolygon(sRechteBande);
+    drawPolygon(sLinkeBande);
   }
   
   if (currentLevel == 6) {
@@ -528,6 +546,7 @@ void restart() {
   pointerWasOutside = false;
   levelRunning = true;
   buildLevel();
+  gameData.length = 0;
 }
 
 void buildLevel() {
@@ -579,15 +598,16 @@ void buildLevel() {
 
   // Level 4 physics
   if (currentLevel == 4) {
-    hole = new Vec2(width/2, 240);
+    hole = new Vec2(width/2, 350);
     startingPoint = new Vec2(width/2, height * .8);
   }
 
   // Level 5 physics
   if (currentLevel == 5) {
     hole = new Vec2(400, 120);
-    startingPoint = new Vec2(100, 500);
-    buildPolygonBody(star);
+    startingPoint = new Vec2(155, 652);
+    buildPolygonBody(sLinkeBande);
+    buildPolygonBody(sRechteBande);
   }
   
   // Level 6 physics
@@ -795,6 +815,10 @@ void keyPressed() {
     
     post_to_url("endgame.php", params, "post");
   }
+  if (key == 'r') {
+    restart();
+  }
+
   
 }
 
@@ -974,4 +998,9 @@ int[][] diagonalProtectors = {{277,224,324,177,285,232},{324,177,333,185,285,232
 int[][] fiveShape = {{474,47,466,57,53,50},{468,117,470,748,413,117},{413,117,470,748,413,161},{149,161,413,161,151,322},{151,322,413,161,179,307},{179,307,413,161,233,293},{233,293,413,161,292,291},{292,291,413,161,331,298},{331,298,413,161,385,341},{385,341,413,161,423,402},{423,402,413,161,431,456},{413,161,470,748,431,456},{431,456,470,748,422,514},{422,514,470,748,395,565},{395,565,470,748,356,614},{356,614,470,748,302,639},{470,748,54,747,302,639},{302,639,54,747,236,638},{236,638,54,747,159,603},{159,603,54,747,102,559},{54,747,53,50,102,559},{158,542,143,523,182,561},{182,561,143,523,212,576},{212,576,143,523,254,589},{254,589,143,523,310,585},{310,585,143,523,345,559},{345,559,143,523,370,521},{370,521,143,523,379,480},{379,480,143,523,378,431},{378,431,143,523,357,383},{357,383,143,523,316,355},{143,523,102,559,316,355},{316,355,102,559,257,350},{257,350,102,559,200,356},{200,356,102,559,152,390},{152,390,102,559,143,400},{143,400,102,559,101,399},{102,559,53,50,101,399},{101,399,53,50,102,114},{53,50,466,57,102,114},{413,115,102,114,466,57},{410,111,464,50,417,118},{467,118,417,118,464,50}};
 
 int[][] zeroShape = {{263,643,265,748,198,640},{198,640,265,748,142,609},{267,641,324,632,273,742},{324,632,375,593,273,742},{273,742,375,593,465,746},{375,593,414,529,465,746},{414,529,424,454,465,746},{424,454,426,375,465,746},{426,375,428,272,465,746},{465,746,428,272,468,52},{428,272,423,239,468,52},{423,239,404,202,468,52},{404,202,367,157,468,52},{367,157,321,128,468,52},{321,128,273,124,468,52},{273,124,187,129,468,52},{468,52,187,129,55,53},{187,129,136,152,55,53},{136,152,106,195,55,53},{106,195,92,247,55,53},{92,247,92,341,55,53},{92,341,96,491,55,53},{55,53,96,491,51,750},{96,491,111,572,51,750},{111,572,142,609,51,750},{51,750,142,609,265,748},{289,587,262,590,313,580},{313,580,262,590,336,565},{336,565,262,590,352,554},{352,554,262,590,366,534},{366,534,262,590,375,509},{375,509,262,590,377,491},{377,491,262,590,378,269},{378,269,262,590,372,234},{372,234,262,590,360,207},{360,207,262,590,336,181},{336,181,262,590,316,171},{316,171,262,590,259,164},{259,164,262,590,223,166},{223,166,262,590,193,171},{193,171,262,590,167,191},{167,191,262,590,155,209},{155,209,262,590,149,251},{149,251,262,590,152,495},{152,495,262,590,158,542},{158,542,262,590,182,572},{220,586,182,572,262,590},{258,644,271,644,280,742},{258,644,280,742,250,743}};
+
+int[][] sRechteBande = {{324,178,356,179,265,192},{356,179,470,179,265,192},{265,192,470,179,225,210},{225,210,470,179,212,241},{212,241,470,179,222,283},{222,283,470,179,233,303},{233,303,470,179,255,322},{255,322,470,179,286,332},{286,332,470,179,334,345},{334,345,470,179,365,359},{365,359,470,179,395,381},{395,381,470,179,412,408},{412,408,470,179,423,439},{470,179,469,746,423,439},{423,439,469,746,419,481},{419,481,469,746,405,524},{405,524,469,746,388,548},{388,548,469,746,147,740},{54,643,147,740,53,751},{53,751,147,740,469,746}};
+
+int[][] sLinkeBande = {{265,493,51,656,276,479},{276,479,51,656,282,462},{282,462,51,656,279,445},{279,445,51,656,266,426},{266,426,51,656,251,422},{251,422,51,656,216,414},{216,414,51,656,177,399},{177,399,51,656,139,370},{139,370,51,656,121,345},{121,345,51,656,108,299},{51,656,51,53,108,299},{108,299,51,53,106,248},{106,248,51,53,114,194},{114,194,51,53,134,145},{134,145,51,53,162,114},{162,114,51,53,202,89},{202,89,51,53,251,70},{251,70,51,53,298,65},{298,65,51,53,365,63},{365,63,51,53,464,63},{464,48,464,63,51,53},};
+
 
