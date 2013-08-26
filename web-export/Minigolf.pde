@@ -265,6 +265,21 @@ void draw() {
 
       }
       else drivebySound.cue(0);
+      
+      if (currentLevel == 4 && dist(ballPos.x, ballPos.y, hole.x, hole.y) > 42 && dist(ballPos.x, ballPos.y, hole.x, hole.y) < 139) {
+        float force = 0.1;
+        Vec2 impulse =  new Vec2(-(hole.x-ballPos.x), -(hole.y-ballPos.y));
+        impulse.normalize();
+        impulse = impulse.mul(force);
+        balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
+      }
+      if (currentLevel == 4 && dist(ballPos.x, ballPos.y, hole.x, hole.y) <= 42) {
+        float force = 0.1;
+        Vec2 impulse =  new Vec2((hole.x-ballPos.x), (hole.y-ballPos.y));
+        impulse.normalize();
+        impulse = impulse.mul(force);
+        balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
+      }
 
 
       // ball drops in hole
@@ -369,7 +384,7 @@ void draw() {
   
 
   if (!levelRunning && currentLevel != 0 && currentLevel != 10) {
-    textSize(32);
+    textSize(24);
     textAlign(CENTER);
     PFont mono;
     mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
