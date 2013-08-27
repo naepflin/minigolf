@@ -254,12 +254,12 @@ void draw() {
     if (currentLevel != 0 && currentLevel != 10) {
 
       // gravity when close to the hole
-      if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= holeRadius * 1.5) {
-        float force = sq(ballRadius) * .001 / (20 / (holeRadius / 4));
+      if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= holeRadius * 1.5 && dist(ballPos.x, ballPos.y, hole.x, hole.y) >= holeRadius * .7) {
+        //float force = sq(ballRadius) * .001 / (20 / (holeRadius / 4));
+        float force = 0.1 *  (sq(ballRadius) / 100) * (holeRadius / 20) * (speed/10 + 1) / (1 + pow(3, -((holeRadius * 1.5) - dist(ballPos.x, ballPos.y, hole.x, hole.y))/10));
         Vec2 impulse =  new Vec2((hole.x-ballPos.x), (hole.y-ballPos.y));
         impulse.normalize();
         impulse = impulse.mul(force);
-        println(force);
         balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
         
         drivebySound.volume(20);
@@ -299,7 +299,7 @@ void draw() {
 
 
       // ball drops in hole
-      if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= holeRadius * .7  && speed <= 2.5) {
+      if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= holeRadius * .7  && speed <= 4.5) {
         //println("Won  " + speed);
         physics.getWorld().DestroyBody(balls[i]);
         balls = concat(subset(balls, 0, i), subset(balls, i+1, balls.length));
@@ -815,8 +815,6 @@ void keyPressed() {
   if (key == 'r') {
     restart();
   }
-
-  
 }
 
 void submitResult() {
