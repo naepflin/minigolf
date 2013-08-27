@@ -267,14 +267,14 @@ void draw() {
       else drivebySound.cue(0);
       
       if (currentLevel == 4 && dist(ballPos.x, ballPos.y, hole.x, hole.y) > 52 && dist(ballPos.x, ballPos.y, hole.x, hole.y) < 145) {
-        float force = 0.06;
+        float force = 0.03;
         Vec2 impulse =  new Vec2(-(hole.x-ballPos.x), -(hole.y-ballPos.y));
         impulse.normalize();
         impulse = impulse.mul(force);
         balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
       }
       if (currentLevel == 4 && dist(ballPos.x, ballPos.y, hole.x, hole.y) <= 52 && dist(ballPos.x, ballPos.y, hole.x, hole.y) > holeRadius * 1.5) {
-        float force = 0.02;
+        float force = 0.06;
         Vec2 impulse =  new Vec2((hole.x-ballPos.x), (hole.y-ballPos.y));
         impulse.normalize();
         impulse = impulse.mul(force);
@@ -380,8 +380,8 @@ void draw() {
       pushMatrix();
       translate(mouseXTr, mouseYTr);
       rotate(atan(mouseVec.x/mouseVec.y));
-      fill(255);
-      stroke(0);
+      fill(200);
+      //stroke(0);
       rect(-5, -15, 10, 30);
       noStroke();
       popMatrix();
@@ -459,8 +459,7 @@ void drawLevel() {
   if (currentLevel == 3) {
     fill(255);
     stroke(255);
-    drawPolygon(realPilatus);
-    drawPolygon(pilatusTriangle);
+    drawPolygon(pilatus);
   }
   
   if (currentLevel == 4) {
@@ -588,10 +587,9 @@ void buildLevel() {
   
   // Level 3 physics
   if (currentLevel == 3) {
-    hole = new Vec2(400, 120);
-    startingPoint = new Vec2(100, 500);
-    buildPolygonBody(realPilatus);
-    buildPolygonBody(pilatusTriangle);
+    hole = new Vec2(254, 508);
+    startingPoint = new Vec2(158, 150);
+    buildPolygonBody(pilatus);
   }
 
   // Level 4 physics
