@@ -74,9 +74,12 @@
 	      if (window.innerHeight < 816) {
 				var height = window.innerHeight - 16;
 	      	document.getElementById('Minigolf').style.height = height + 'px';
+				var width = 520 / 800 * height;
+	      	document.getElementById('Minigolf').style.width = width + 'px';
 	      }
 			else {
 				document.getElementById('Minigolf').style.height = '800px';
+				document.getElementById('Minigolf').style.width = '520px';
 			}
 	  }
  
@@ -105,7 +108,7 @@ function getProcessingSketchId () { return 'Minigolf'; }
 		<div id="content">
 			<div>
 				<canvas id="Minigolf" data-processing-sources="Minigolf.pde" 
-						width="520" height="800">
+						width="520" height="800" onload="OnResizeDocument()">
 					<p>Your browser does not support the canvas tag.</p>
 					<!-- Note: you can put any alternative content here. -->
 				</canvas>
