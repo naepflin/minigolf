@@ -617,7 +617,9 @@ void mouseDragged() {
   }
 }
 
-
+void mouseMoved() {
+  mouseDragged();
+}
 
 
 void mouseReleased() {
