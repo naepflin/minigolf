@@ -147,10 +147,6 @@ void setup() {
   }
 
 
-  // accelerometer
-  accel = new Accelerometer();
-
-
   // init sounds
   maxim = new Maxim(this);
 
