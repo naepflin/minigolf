@@ -37,6 +37,8 @@ PImage hillImg;
 PImage hillLeftImg;
 PImage hillRightImg;
 PImage ground5Img;
+PImage bahnImg;
+PImage gleisImg;
 
 PVector [] mouseVecHistory;
 PVector mouseVec;
@@ -121,6 +123,8 @@ void setup() {
   restartImg = loadImage("restart.png");
   restartIconImg = loadImage("restart-icon.png");
   hillImg = loadImage("hill.jpg");
+  bahnImg = loadImage("bahn.png");
+  gleisImg = loadImage("gleis.png");
   
   mouseVecHistory = new PVector[5];
   for (int i=0;i<mouseVecHistory.length;i++)
@@ -433,16 +437,14 @@ void drawLevel() {
   }
   if (currentLevel == 7) {
     fill(255);
-
-    float[][] shape = {
-      {
-        100, 100, 300, 300, 100, 300
-      }
-      , {
-        321, 251, 401, 248, 399, 375
-      }
-    };
-    drawPolygon(shape);
+    imageMode(CORNER);
+    image(gleisImg,20,500);
+    float bahnPosX = timeCounter%400;
+    if (timeCounter%400 > 200) bahnPosX = 400 - timeCounter%400;
+    float bahnPosY = 480-timeCounter%400/200*50;
+    if (timeCounter%400 > 200) bahnPosY = 480-(100-timeCounter%400/200*50);
+    image(bahnImg,bahnPosX,bahnPosY);
+    imageMode(CENTER);
   }
   if (currentLevel == 8) {
     fill(255);
