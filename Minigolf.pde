@@ -17,7 +17,6 @@ AudioPlayer holeSound;
 AudioPlayer hitSound;
 AudioPlayer drivebySound;
 
-int howManyElements = 10;
 int whichSoundLooper = 0;
 float ballRadius = 10;
 float holeRadius = 20;
@@ -133,19 +132,7 @@ void setup() {
   hole = new PVector(width/2, height/5);
   startingPoint = new PVector(width/2, height*.8);
 
-  // sets up the collision callbacks
-  // detector = new CollisionDetector (physics, this);
-
-
-  //init the ball:
-  physics.setDensity(10.0);
-  balls = new Body[howManyElements];
-
-  for (var i = 0; i < howManyElements; i++) {
-    balls[i] = physics.createCircle(random(2, width-2), random(2, height-2), ballRadius);
-    balls[i].SetLinearDamping(1.2);
-  }
-
+  balls = new Body[0];
 
   // init sounds
   maxim = new Maxim(this);
@@ -159,12 +146,16 @@ void setup() {
   hitSound = maxim.loadFile("hit.mp3");
   drivebySound = maxim.loadFile("driveby.mp3");
 
+
   // collision callbacks
   detector = new CollisionDetector (physics, this);
+
+  startNextLevel();
 }
 
 
 void draw() {
+  // remap mouse positions to match the size of the canvas
   float widthRatio = width / getCanvasWidth();
   mouseXTr = widthRatio * mouseX;
   pmouseXTr = widthRatio * pmouseX;
@@ -174,27 +165,10 @@ void draw() {
     
   timeCounter++;
   
-  // draw backgrounds
-  noStroke();
-  // draw startup dialog
-  if (!userHasTriggeredAudio) {
-    background(255);
-    textSize(32);
-    textAlign(CENTER);
-    PFont mono;
-    mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
-    textFont(mono);
-    fill(0);
-    text("Klicken zum Starten", width/2, height/2);
-
-  }
   // draw main background
-  else {
-    image(groundImg, width/2, height/2);
-    if (currentLevel == 5) image(ground5Img, width/2, height/2);
-    
-  }
-  
+  if (currentLevel == 5) image(ground5Img, width/2, height/2);
+  else image(groundImg, width/2, height/2);
+
 
   // for mouse-controlled devices: calculate mouse direction with a buffer based on vectors (average of recent mouse motions)
   if ((mouseYTr != pmouseYTr || mouseXTr != pmouseXTr) && !Modernizr.touch) {
@@ -206,39 +180,26 @@ void draw() {
     }
   }
 
-
-  if (currentLevel != 0 && currentLevel != 10) {
-    // draw hole and starting point
-    image(holeImg, hole.x, hole.y);
-    image(startingPointImg, startingPoint.x, startingPoint.y);
-  }
-  
   drawLevel();
-
 
   if (inHole) {
     // draw ball in hole
     noStroke();
     pushMatrix();
     translate(hole.x, hole.y);
-    // Fancy ball graphics:
-
     // (shadow)
     pushMatrix();
     fill(0, 70);
     translate(.1*ballRadius, .1*ballRadius);
     ellipse(0, 0, ballRadius*2.2, ballRadius*2.2);
     popMatrix();
-
     // (main)
     fill(42, 35, 0);
     ellipse(0, 0, ballRadius*2, ballRadius*2);
-
     // (reflection)
     translate(-ballRadius/2, -ballRadius/2);
     fill(60);
     ellipse(0, 0, ballRadius/3, ballRadius/2);
-
     popMatrix();
   }
   
@@ -313,24 +274,19 @@ void draw() {
     noStroke();
     pushMatrix();
     translate(ballPos.x, ballPos.y);
-    // Fancy ball graphics:
-
     // (shadow)
     pushMatrix();
     fill(0, 70);
     translate(.1*ballRadius, .1*ballRadius);
     ellipse(0, 0, ballRadius*2.2, ballRadius*2.2);
     popMatrix();
-
     // (main)
     fill(249, 230, 149);
     ellipse(0, 0, ballRadius*2, ballRadius*2);
-
     // (reflection)
     translate(-ballRadius/2, -ballRadius/2);
     fill(255);
     ellipse(0, 0, ballRadius/3, ballRadius/2);
-
     popMatrix();
 
 
@@ -395,37 +351,26 @@ void draw() {
   }
   
 
-  if (!levelRunning && currentLevel != 0 && currentLevel != 10) {
-    textSize(24);
-    textAlign(CENTER);
-    PFont mono;
-    mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
-    textFont(mono);
-    fill(0);
-    text("Klicken für nächste Bahn", width/2+1, height/2+1);
-    fill(255);
-    text("Klicken für nächste Bahn", width/2, height/2);
-  }
-
-
   if (currentLevel != 0 && currentLevel != 10) {
-    // draw the hit counter
-    fill(255);
     textSize(24);
+    PFont mono;
+    mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
+    textFont(mono);
+
+    // draw the hit counter & level indicator
+    fill(255);
     textAlign(RIGHT);
-    PFont mono;
-    mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
-    textFont(mono);
     text("Schläge: " + counter, width-20, 30);
-  
-    // draw the level indicator
-    fill(255);
-    textSize(24);
     textAlign(LEFT);
-    PFont mono;
-    mono = loadFont("monospace"); // available fonts: sans-serif,serif,monospace,fantasy,cursive
-    textFont(mono);
     text("Bahn " + currentLevel, 20, 30);
+
+    if (!levelRunning) {
+      textAlign(CENTER);
+      fill(0);
+      text("Klicken für nächste Bahn", width/2+1, height/2+1);
+      fill(255);
+      text("Klicken für nächste Bahn", width/2, height/2);
+    }
   }
 }
 
@@ -433,7 +378,14 @@ void draw() {
 
 void drawLevel() {
   
-  
+  noStroke();
+
+  if (currentLevel != 0 && currentLevel != 10) {
+    // draw hole and starting point
+    image(holeImg, hole.x, hole.y);
+    image(startingPointImg, startingPoint.x, startingPoint.y);
+  }
+
   image(restartIconImg, width-60, height-20);
 
   
