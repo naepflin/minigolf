@@ -432,8 +432,13 @@ void drawLevel() {
   if (currentLevel == 6) {
     fill(255);
     stroke(255);
-    drawPolygon(wallBottomRight);
     drawPolygon(deflectorTopLeft);
+    
+    rectMode(CORNERS);
+    rect(50,470,106,451);
+    rect(170,308,228,327);
+    rect(221,192,468,746);
+    rectMode(CORNER);
   }
   if (currentLevel == 7) {
     fill(255);
@@ -539,7 +544,7 @@ void buildLevel() {
   // Level 3 physics
   if (currentLevel == 3) {
     hole = new Vec2(254, 508);
-    startingPoint = new Vec2(158, 150);
+    startingPoint = new Vec2(364, 155);
     buildPolygonBody(pilatus);
   }
 
@@ -561,8 +566,10 @@ void buildLevel() {
   if (currentLevel == 6) {
     hole = new Vec2(400, 120);
     startingPoint = new Vec2(134, 671);
-    buildPolygonBody(wallBottomRight);
     buildPolygonBody(deflectorTopLeft);
+    block = append(block, physics.createRect(50,470,106,451));
+    block = append(block, physics.createRect(170,308,228,327));
+    block = append(block, physics.createRect(221,192,468,746));
   }
 
   // Level 7 physics
@@ -656,7 +663,7 @@ void mouseReleased() {
   }
   
   
-  //println (mouseXTr + ", " + mouseYTr + ", ");
+  println (mouseXTr + ", " + mouseYTr + ", ");
 }
 
 void mouseClicked() {
