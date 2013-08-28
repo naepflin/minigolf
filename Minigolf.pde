@@ -39,6 +39,8 @@ PImage hillRightImg;
 PImage ground5Img;
 PImage bahnImg;
 PImage gleisImg;
+PImage eichhoernchenImg;
+PImage eichhofImg;
 
 PVector [] mouseVecHistory;
 PVector mouseVec;
@@ -125,6 +127,8 @@ void setup() {
   hillImg = loadImage("hill.jpg");
   bahnImg = loadImage("bahn.png");
   gleisImg = loadImage("gleis.png");
+  eichhoernchenImg = loadImage("eichhoernchen.png");
+  eichhofImg = loadImage("eichhof.png");
   
   mouseVecHistory = new PVector[5];
   for (int i=0;i<mouseVecHistory.length;i++)
@@ -405,8 +409,8 @@ void drawLevel() {
     image(gleisImg,60,510);
     float bahnPosX = timeCounter%600;
     if (timeCounter%600 > 300) bahnPosX = 600 - timeCounter%600;
-    float bahnPosY = 480-timeCounter%600/300*75;
-    if (timeCounter%600 > 300) bahnPosY = 480-(150-timeCounter%600/300*75);
+    float bahnPosY = 480-timeCounter%600/300*77;
+    if (timeCounter%600 > 300) bahnPosY = 480-(2*77-timeCounter%600/300*77);
     image(bahnImg,bahnPosX,bahnPosY);
     imageMode(CENTER);
   }
@@ -451,6 +455,8 @@ void drawLevel() {
   }
   if (currentLevel == 7) {
     fill(255);
+    image(eichhoernchenImg, width/2, 300);
+    image(eichhofImg, width/2, 540);
   }
   if (currentLevel == 8) {
     fill(255);
@@ -576,30 +582,21 @@ void buildLevel() {
 
   // Level 7 physics
   if (currentLevel == 7) {
-    hole = new Vec2(400, 120);
-    startingPoint = new Vec2(100, 500);
-
-    float[][] polygons = {
-      {
-        100, 100, 300, 300, 100, 300
-      }
-      , {
-        321, 251, 401, 248, 399, 375
-      }
-    };
-    buildPolygonBody(polygons);
+    hole = new Vec2(269, 203);
+    startingPoint = new Vec2(111, 668);
+    buildPolygonBody(eichhoernchen);
   }
 
   // Level 8 physics
   if (currentLevel == 8) {
-    hole = new Vec2(340, 138);
+    hole = new Vec2(389, 162);
     startingPoint = new Vec2(144, 561);
     buildPolygonBody(fiveShape);
   }
   // Level 9 physics
   if (currentLevel == 9) {
-    hole = new Vec2(263, 615);
-    startingPoint = new Vec2(251, 145);
+    hole = new Vec2(260, 620);
+    startingPoint = new Vec2(260, 190);
     buildPolygonBody(zeroShape);
   }
 
