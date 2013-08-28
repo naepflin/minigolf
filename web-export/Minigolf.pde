@@ -592,8 +592,7 @@ void buildLevel() {
     buildPolygonBody(zeroShape);
   }
 
-  resetBall();
-  
+  resetBall();  
 }
 
 
@@ -622,10 +621,8 @@ void mouseDragged() {
 void mouseReleased() {
   // on iOS, the first audio playback has to be triggered directly by a user interaction
   if (!userHasTriggeredAudio) {
-    for (int i=0;i<5;i++) {
-      wallSounds[i].volume(0);
-      wallSounds[i].play();
-    }
+    holeSound.volume(0);
+    holeSound.play();
     userHasTriggeredAudio = true;
   }
   
@@ -669,13 +666,9 @@ void mouseClicked() {
 
 
 void startNextLevel() {
-
   levelRunning = true;
   inHole = false;
   currentLevel++;
-
-
-  // to do: maybe display the labyrinth after completing
   buildLevel();
 }
 
@@ -792,8 +785,6 @@ void resetBall() {
   Body newBall = physics.createCircle(startingPoint.x, startingPoint.y, ballRadius);
   newBall.SetLinearDamping(1.2);
   balls = append(balls, newBall);
-  
-  
 }
 
 int[][] EckTeil = {{383,300,396,405,312,250},{312,250,396,405,136,351},{120,271,136,351,87,345},{136,351,396,405,87,345},{87,345,396,405,104,445},{262,500,104,445,396,405}};
