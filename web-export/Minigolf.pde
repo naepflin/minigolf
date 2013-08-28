@@ -400,8 +400,16 @@ void drawLevel() {
   rect(40, height-60, width-80, 20); //horizontal bar
   rect(width-60, 40, 20, height-80); //vertical bar
   
-  
-  
+  if (currentLevel == 1) {  
+    imageMode(CORNER);
+    image(gleisImg,60,510);
+    float bahnPosX = timeCounter%600;
+    if (timeCounter%600 > 300) bahnPosX = 600 - timeCounter%600;
+    float bahnPosY = 480-timeCounter%600/300*75;
+    if (timeCounter%600 > 300) bahnPosY = 480-(150-timeCounter%600/300*75);
+    image(bahnImg,bahnPosX,bahnPosY);
+    imageMode(CENTER);
+  }
   
   if (currentLevel == 2) {
     fill(255);
@@ -427,6 +435,7 @@ void drawLevel() {
     stroke(255);
     drawPolygon(sRechteBande);
     drawPolygon(sLinkeBande);
+    drawPolygon(sLinkeBandeKorrektur);
   }
   
   if (currentLevel == 6) {
@@ -442,14 +451,6 @@ void drawLevel() {
   }
   if (currentLevel == 7) {
     fill(255);
-    imageMode(CORNER);
-    image(gleisImg,20,500);
-    float bahnPosX = timeCounter%400;
-    if (timeCounter%400 > 200) bahnPosX = 400 - timeCounter%400;
-    float bahnPosY = 480-timeCounter%400/200*50;
-    if (timeCounter%400 > 200) bahnPosY = 480-(100-timeCounter%400/200*50);
-    image(bahnImg,bahnPosX,bahnPosY);
-    imageMode(CENTER);
   }
   if (currentLevel == 8) {
     fill(255);
@@ -543,7 +544,7 @@ void buildLevel() {
   
   // Level 3 physics
   if (currentLevel == 3) {
-    hole = new Vec2(254, 508);
+    hole = new Vec2(215, 654);
     startingPoint = new Vec2(364, 155);
     buildPolygonBody(pilatus);
   }
@@ -556,9 +557,10 @@ void buildLevel() {
 
   // Level 5 physics
   if (currentLevel == 5) {
-    hole = new Vec2(400, 120);
+    hole = new Vec2(235, 141);//400, 120);
     startingPoint = new Vec2(155, 652);
     buildPolygonBody(sLinkeBande);
+    buildPolygonBody(sLinkeBandeKorrektur);
     buildPolygonBody(sRechteBande);
   }
   
@@ -661,9 +663,6 @@ void mouseReleased() {
     }
     pointerWasOutside = false;
   }
-  
-  
-  println (mouseXTr + ", " + mouseYTr + ", ");
 }
 
 void mouseClicked() {
@@ -767,6 +766,9 @@ void keyPressed() {
   if (key == 'r') {
     restart();
   }
+  if (key == 'm') {
+    println (mouseXTr + ", " + mouseYTr + ", ");
+  }
 }
 
 void submitResult() {
@@ -820,6 +822,8 @@ int[][] zeroShape = {{263,643,265,748,198,640},{198,640,265,748,142,609},{267,64
 
 int[][] sRechteBande = {{324,178,356,179,265,192},{356,179,470,179,265,192},{265,192,470,179,225,210},{225,210,470,179,212,241},{212,241,470,179,222,283},{222,283,470,179,233,303},{233,303,470,179,255,322},{255,322,470,179,286,332},{286,332,470,179,334,345},{334,345,470,179,365,359},{365,359,470,179,395,381},{395,381,470,179,412,408},{412,408,470,179,423,439},{470,179,469,746,423,439},{423,439,469,746,419,481},{419,481,469,746,405,524},{405,524,469,746,388,548},{388,548,469,746,147,740},{54,643,147,740,53,751},{53,751,147,740,469,746}};
 
-int[][] sLinkeBande = {{265,493,51,656,276,479},{276,479,51,656,282,462},{282,462,51,656,279,445},{279,445,51,656,266,426},{266,426,51,656,251,422},{251,422,51,656,216,414},{216,414,51,656,177,399},{177,399,51,656,139,370},{139,370,51,656,121,345},{121,345,51,656,108,299},{51,656,51,53,108,299},{108,299,51,53,106,248},{106,248,51,53,114,194},{114,194,51,53,134,145},{134,145,51,53,162,114},{162,114,51,53,202,89},{202,89,51,53,251,70},{251,70,51,53,298,65},{298,65,51,53,365,63},{365,63,51,53,464,63},{464,48,464,63,51,53},};
+int[][] sLinkeBande = {{265,493,51,656,276,479},{276,479,51,656,282,462},{282,462,51,656,279,445},{279,445,51,656,266,426},{266,426,51,656,251,422},{251,422,51,656,216,414},{216,414,51,656,177,399},{177,399,51,656,139,370},{139,370,51,656,121,345},{121,345,51,656,108,299},{51,656,51,53,108,299},{108,299,51,53,106,248},{106,248,51,53,114,194},{114,194,51,53,134,145},{134,145,51,53,162,114},{162,114,51,53,202,89},{202,89,51,53,251,70},{251,70,51,53,298,65},{298,65,51,53,365,63},{365,63,51,53,464,63},{464,48,464,63,51,53}};
+
+int[][] sLinkeBandeKorrektur = {{471,51,466,207,261,48},{261,48,466,207,251,70},{251,70,466,207,300,171},{300,171,466,207,225,210}};
 
 

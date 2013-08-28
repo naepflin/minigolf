@@ -400,8 +400,16 @@ void drawLevel() {
   rect(40, height-60, width-80, 20); //horizontal bar
   rect(width-60, 40, 20, height-80); //vertical bar
   
-  
-  
+  if (currentLevel == 1) {  
+    imageMode(CORNER);
+    image(gleisImg,60,510);
+    float bahnPosX = timeCounter%600;
+    if (timeCounter%600 > 300) bahnPosX = 600 - timeCounter%600;
+    float bahnPosY = 480-timeCounter%600/300*75;
+    if (timeCounter%600 > 300) bahnPosY = 480-(150-timeCounter%600/300*75);
+    image(bahnImg,bahnPosX,bahnPosY);
+    imageMode(CENTER);
+  }
   
   if (currentLevel == 2) {
     fill(255);
@@ -427,6 +435,7 @@ void drawLevel() {
     stroke(255);
     drawPolygon(sRechteBande);
     drawPolygon(sLinkeBande);
+    drawPolygon(sLinkeBandeKorrektur);
   }
   
   if (currentLevel == 6) {
@@ -442,14 +451,6 @@ void drawLevel() {
   }
   if (currentLevel == 7) {
     fill(255);
-    imageMode(CORNER);
-    image(gleisImg,20,500);
-    float bahnPosX = timeCounter%400;
-    if (timeCounter%400 > 200) bahnPosX = 400 - timeCounter%400;
-    float bahnPosY = 480-timeCounter%400/200*50;
-    if (timeCounter%400 > 200) bahnPosY = 480-(100-timeCounter%400/200*50);
-    image(bahnImg,bahnPosX,bahnPosY);
-    imageMode(CENTER);
   }
   if (currentLevel == 8) {
     fill(255);
@@ -543,7 +544,7 @@ void buildLevel() {
   
   // Level 3 physics
   if (currentLevel == 3) {
-    hole = new Vec2(254, 508);
+    hole = new Vec2(215, 654);
     startingPoint = new Vec2(364, 155);
     buildPolygonBody(pilatus);
   }
@@ -556,9 +557,10 @@ void buildLevel() {
 
   // Level 5 physics
   if (currentLevel == 5) {
-    hole = new Vec2(400, 120);
+    hole = new Vec2(235, 141);//400, 120);
     startingPoint = new Vec2(155, 652);
     buildPolygonBody(sLinkeBande);
+    buildPolygonBody(sLinkeBandeKorrektur);
     buildPolygonBody(sRechteBande);
   }
   
@@ -661,9 +663,6 @@ void mouseReleased() {
     }
     pointerWasOutside = false;
   }
-  
-  
-  println (mouseXTr + ", " + mouseYTr + ", ");
 }
 
 void mouseClicked() {
@@ -766,6 +765,9 @@ void keyPressed() {
   }
   if (key == 'r') {
     restart();
+  }
+  if (key == 'm') {
+    println (mouseXTr + ", " + mouseYTr + ", ");
   }
 }
 
