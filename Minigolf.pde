@@ -41,6 +41,7 @@ PImage bahnImg;
 PImage gleisImg;
 PImage eichhoernchenImg;
 PImage eichhofImg;
+PImage putterImg;
 
 PVector [] mouseVecHistory;
 PVector mouseVec;
@@ -129,6 +130,7 @@ void setup() {
   gleisImg = loadImage("gleis.png");
   eichhoernchenImg = loadImage("eichhoernchen.png");
   eichhofImg = loadImage("eichhof.png");
+  putterImg = loadImage("putter.jpg");
   
   mouseVecHistory = new PVector[5];
   for (int i=0;i<mouseVecHistory.length;i++)
@@ -174,7 +176,7 @@ void draw() {
   timeCounter++;
   
   // draw main background
-  if (currentLevel == 5) image(ground5Img, width/2, height/2);
+  if (currentLevel == 7) image(ground5Img, width/2, height/2);
   else image(groundImg, width/2, height/2);
 
 
@@ -232,14 +234,14 @@ void draw() {
       }
       else drivebySound.cue(0);
       
-      if (currentLevel == 4 && dist(ballPos.x, ballPos.y, hole.x, hole.y) > 52 && dist(ballPos.x, ballPos.y, hole.x, hole.y) < 145) {
+      if (currentLevel == 6 && dist(ballPos.x, ballPos.y, hole.x, hole.y) > 52 && dist(ballPos.x, ballPos.y, hole.x, hole.y) < 145) {
         float force = 0.03;
         Vec2 impulse =  new Vec2(-(hole.x-ballPos.x), -(hole.y-ballPos.y));
         impulse.normalize();
         impulse = impulse.mul(force);
         balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
       }
-      if (currentLevel == 4 && dist(ballPos.x, ballPos.y, hole.x, hole.y) <= 52 && dist(ballPos.x, ballPos.y, hole.x, hole.y) > holeRadius * 1.5) {
+      if (currentLevel == 6 && dist(ballPos.x, ballPos.y, hole.x, hole.y) <= 52 && dist(ballPos.x, ballPos.y, hole.x, hole.y) > holeRadius * 1.5) {
         float force = 0.06;
         Vec2 impulse =  new Vec2((hole.x-ballPos.x), (hole.y-ballPos.y));
         impulse.normalize();
@@ -247,14 +249,14 @@ void draw() {
         balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
       }
       
-      if (currentLevel == 5 && dist(ballPos.x, ballPos.y, 50, 273) < 145) {
+      if (currentLevel == 7 && dist(ballPos.x, ballPos.y, 50, 273) < 145) {
         float force = 0.03;
         Vec2 impulse =  new Vec2(1, -.5);
         impulse.normalize();
         impulse = impulse.mul(force);
         balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
       }
-      if (currentLevel == 5 && dist(ballPos.x, ballPos.y, 474, 465) < 145) {
+      if (currentLevel == 7 && dist(ballPos.x, ballPos.y, 474, 465) < 145) {
         float force = 0.07;
         Vec2 impulse =  new Vec2(-1, -0.2);
         impulse.normalize();
@@ -344,6 +346,8 @@ void draw() {
       fill(200);
       //stroke(0);
       rect(-5, -15, 10, 30);
+      imageMode(CENTER);
+      image(putterImg,0,0);
       noStroke();
       popMatrix();
     }
@@ -423,26 +427,10 @@ void drawLevel() {
 
   if (currentLevel == 3) {
     fill(255);
-    stroke(255);
-    drawPolygon(pilatus);
+    image(eichhoernchenImg, width/2, 300);
+    image(eichhofImg, width/2, 540);
   }
-  
   if (currentLevel == 4) {
-    fill(255);
-    stroke(255);
-    image(hillImg, hole.x, hole.y);
-    image(holeImg, hole.x, hole.y);
-  }
-
-  if (currentLevel == 5) {
-    fill(255);
-    stroke(255);
-    drawPolygon(sRechteBande);
-    drawPolygon(sLinkeBande);
-    drawPolygon(sLinkeBandeKorrektur);
-  }
-  
-  if (currentLevel == 6) {
     fill(255);
     stroke(255);
     drawPolygon(deflectorTopLeft);
@@ -453,10 +441,23 @@ void drawLevel() {
     rect(221,192,468,746);
     rectMode(CORNER);
   }
+  if (currentLevel == 5) {
+    fill(255);
+    stroke(255);
+    drawPolygon(pilatus);
+  }
+  if (currentLevel == 6) {
+    fill(255);
+    stroke(255);
+    image(hillImg, hole.x, hole.y);
+    image(holeImg, hole.x, hole.y);
+  }
   if (currentLevel == 7) {
     fill(255);
-    image(eichhoernchenImg, width/2, 300);
-    image(eichhofImg, width/2, 540);
+    stroke(255);
+    drawPolygon(sRechteBande);
+    drawPolygon(sLinkeBande);
+    drawPolygon(sLinkeBandeKorrektur);
   }
   if (currentLevel == 8) {
     fill(255);
@@ -535,43 +536,22 @@ void buildLevel() {
   hole = new Vec2(width/2, height*.2);
   startingPoint = new Vec2(width/2, height*.8);
   
-  // Level 1 physics
+  // Level physics
   if (currentLevel == 1) {
     hole = new Vec2(width/2, height*.2);
     startingPoint = new Vec2(width/2, height*.8);
   }
-  // Level 2 physics
   if (currentLevel == 2) {
     hole = new Vec2(width/2, height*.2);
     startingPoint = new Vec2(width/2, height*.8);
     buildPolygonBody(diagonalProtectors);
   }
-  
-  
-  // Level 3 physics
   if (currentLevel == 3) {
-    hole = new Vec2(215, 654);
-    startingPoint = new Vec2(364, 155);
-    buildPolygonBody(pilatus);
+    hole = new Vec2(272, 203);
+    startingPoint = new Vec2(111, 668);
+    buildPolygonBody(eichhoernchen);
   }
-
-  // Level 4 physics
   if (currentLevel == 4) {
-    hole = new Vec2(width/2, 350);
-    startingPoint = new Vec2(width/2, height * .8);
-  }
-
-  // Level 5 physics
-  if (currentLevel == 5) {
-    hole = new Vec2(235, 141);//400, 120);
-    startingPoint = new Vec2(155, 652);
-    buildPolygonBody(sLinkeBande);
-    buildPolygonBody(sLinkeBandeKorrektur);
-    buildPolygonBody(sRechteBande);
-  }
-  
-  // Level 6 physics
-  if (currentLevel == 6) {
     hole = new Vec2(400, 120);
     startingPoint = new Vec2(134, 671);
     buildPolygonBody(deflectorTopLeft);
@@ -579,21 +559,27 @@ void buildLevel() {
     block = append(block, physics.createRect(170,308,228,327));
     block = append(block, physics.createRect(221,192,468,746));
   }
-
-  // Level 7 physics
-  if (currentLevel == 7) {
-    hole = new Vec2(269, 203);
-    startingPoint = new Vec2(111, 668);
-    buildPolygonBody(eichhoernchen);
+  if (currentLevel == 5) {
+    hole = new Vec2(215, 654);
+    startingPoint = new Vec2(364, 155);
+    buildPolygonBody(pilatus);
   }
-
-  // Level 8 physics
+  if (currentLevel == 6) {
+    hole = new Vec2(width/2, 350);
+    startingPoint = new Vec2(width/2, height * .8);
+  }
+  if (currentLevel == 7) {
+    hole = new Vec2(235, 141);//400, 120);
+    startingPoint = new Vec2(155, 652);
+    buildPolygonBody(sLinkeBande);
+    buildPolygonBody(sLinkeBandeKorrektur);
+    buildPolygonBody(sRechteBande);
+  }
   if (currentLevel == 8) {
     hole = new Vec2(389, 162);
     startingPoint = new Vec2(144, 561);
     buildPolygonBody(fiveShape);
   }
-  // Level 9 physics
   if (currentLevel == 9) {
     hole = new Vec2(260, 620);
     startingPoint = new Vec2(260, 190);
