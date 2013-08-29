@@ -42,6 +42,7 @@ PImage gleisImg;
 PImage eichhoernchenImg;
 PImage eichhofImg;
 PImage putterImg;
+PImage emmiImg;
 
 PVector [] mouseVecHistory;
 PVector mouseVec;
@@ -130,7 +131,8 @@ void setup() {
   gleisImg = loadImage("gleis.png");
   eichhoernchenImg = loadImage("eichhoernchen.png");
   eichhofImg = loadImage("eichhof.png");
-  putterImg = loadImage("putter.jpg");
+  putterImg = loadImage("putter.png");
+  emmiImg = loadImage("emmi.png");
   
   mouseVecHistory = new PVector[5];
   for (int i=0;i<mouseVecHistory.length;i++)
@@ -345,9 +347,9 @@ void draw() {
       rotate(atan(mouseVec.x/mouseVec.y));
       fill(200);
       //stroke(0);
-      rect(-5, -15, 10, 30);
+      //rect(-5, -15, 10, 30);
       imageMode(CENTER);
-      image(putterImg,0,0);
+      image(putterImg,-20,5);
       noStroke();
       popMatrix();
     }
@@ -455,9 +457,7 @@ void drawLevel() {
   if (currentLevel == 7) {
     fill(255);
     stroke(255);
-    drawPolygon(sRechteBande);
-    drawPolygon(sLinkeBande);
-    drawPolygon(sLinkeBandeKorrektur);
+    image(emmiImg, 270, 370);
   }
   if (currentLevel == 8) {
     fill(255);
@@ -569,11 +569,14 @@ void buildLevel() {
     startingPoint = new Vec2(width/2, height * .8);
   }
   if (currentLevel == 7) {
-    hole = new Vec2(235, 141);//400, 120);
-    startingPoint = new Vec2(155, 652);
-    buildPolygonBody(sLinkeBande);
-    buildPolygonBody(sLinkeBandeKorrektur);
-    buildPolygonBody(sRechteBande);
+    hole = new Vec2(258, 187);//400, 120);
+    startingPoint = new Vec2(263, 677);
+    buildPolygonBody(fahnenschwinger);
+    buildPolygonBody(kuh);
+    buildPolygonBody(glocke);
+    buildPolygonBody(jodler);
+    buildPolygonBody(edelweiss);
+    buildPolygonBody(alphorn);
   }
   if (currentLevel == 8) {
     hole = new Vec2(389, 162);
