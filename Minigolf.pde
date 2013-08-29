@@ -41,7 +41,6 @@ PImage bahnImg;
 PImage gleisImg;
 PImage eichhoernchenImg;
 PImage eichhofImg;
-PImage putterImg;
 PImage emmiImg;
 
 PVector [] mouseVecHistory;
@@ -131,7 +130,6 @@ void setup() {
   gleisImg = loadImage("gleis.png");
   eichhoernchenImg = loadImage("eichhoernchen.png");
   eichhofImg = loadImage("eichhof.png");
-  putterImg = loadImage("putter.png");
   emmiImg = loadImage("emmi.png");
   
   mouseVecHistory = new PVector[5];
@@ -347,9 +345,11 @@ void draw() {
       rotate(atan(mouseVec.x/mouseVec.y));
       fill(200);
       //stroke(0);
-      //rect(-5, -15, 10, 30);
-      imageMode(CENTER);
-      image(putterImg,-20,5);
+      rect(-5, -15, 10, 30,3);
+      fill(0);
+      rect(-1, 0, 2, 15,1);
+      fill(255,0,0);
+      ellipse(0,15,6,6);
       noStroke();
       popMatrix();
     }
