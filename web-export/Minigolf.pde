@@ -675,87 +675,8 @@ void myCustomRenderer(World world) {
 }
 
 void keyPressed() {
-
-  //keystroke impulse for desktop devices
-  //left cursor
-  if (keyCode == LEFT) {
-    Vec2 impulse = new Vec2(-.01, 0);
-    impulse = impulse.mul(sq(ballRadius));
-    for (var i = 0; i < balls.length; i++) {
-      balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
-    }
-  }
-  //right cursor
-  if (keyCode == RIGHT) {
-    Vec2 impulse = new Vec2(.01, 0);
-    impulse = impulse.mul(sq(ballRadius));
-    for (var i = 0; i < balls.length; i++) {
-      balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
-    }
-  }
-  //up cursor
-  if (keyCode == UP) {
-    Vec2 impulse = new Vec2(0, -.01);
-    impulse = impulse.mul(sq(ballRadius));
-    for (var i = 0; i < balls.length; i++) {
-      balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
-    }
-  }
-  //down cursor
-  if (keyCode == DOWN) {
-    Vec2 impulse = new Vec2(0, .01);
-    impulse = impulse.mul(sq(ballRadius));
-    for (var i = 0; i < balls.length; i++) {
-      balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
-    }
-  }
-  if (keyCode == 49) {
-    currentLevel = 1;
-    buildLevel();
-  }
-  if (keyCode == 50) {
-    currentLevel = 2;
-    buildLevel();
-  }
-  if (keyCode == 51) {
-    currentLevel = 3;
-    buildLevel();
-  }
-  if (keyCode == 52) {
-    currentLevel = 4;
-    buildLevel();
-  }
-  if (keyCode == 53) {
-    currentLevel = 5;
-    buildLevel();
-  }
-  if (keyCode == 54) {
-    currentLevel = 6;
-    buildLevel();
-  }
-  if (keyCode == 55) {
-    currentLevel = 7;
-    buildLevel();
-  }
-  if (keyCode == 56) {
-    currentLevel = 8;
-    buildLevel();
-  }
-  if (keyCode == 57) {
-    currentLevel = 9;
-    buildLevel();
-  }
-  if (key == 'a') {
-    
-    String[] params = {"s", counter, "v", serialize(gameData)};
-    
-    post_to_url("endgame.php", params, "post");
-  }
   if (key == 'r') {
     restart();
-  }
-  if (key == 'm') {
-    println (mouseXTr + ", " + mouseYTr + ", ");
   }
 }
 
