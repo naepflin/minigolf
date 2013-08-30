@@ -447,7 +447,7 @@ void drawLevel() {
   if (currentLevel == 5) {
     fill(255);
     stroke(255);
-    image(pilatusImg,262, 588);
+    image(pilatusImg,260, 589);
     //drawPolygon(pilatus);
   }
   if (currentLevel == 6) {
