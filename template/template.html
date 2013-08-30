@@ -37,11 +37,12 @@
  
 	   function hideAddressBar()
 	  {
-	    if(!window.location.hash)
+	    if(!window.location.hash && Modernizr.touch)
 	    {
 	        if(document.height < window.outerHeight)
 	        {
 	            document.body.style.height = (window.outerHeight + 50) + 'px';
+					alert(window.outerHeight + 50);
 	        }
  
 	        setTimeout( function(){ window.scrollTo(0, 1); }, 50 );

@@ -36,7 +36,7 @@ PImage restartIconImg;
 PImage hillImg;
 PImage hillLeftImg;
 PImage hillRightImg;
-PImage ground5Img;
+PImage groundEmmiImg;
 PImage bahnImg;
 PImage gleisImg;
 PImage eichhoernchenImg;
@@ -119,7 +119,7 @@ void setup() {
 
   physics.setRestitution(.4);
   groundImg = loadImage("platz-k.jpg");
-  ground5Img = loadImage("platz-k5.jpg");
+  groundEmmiImg = loadImage("platz-k-emmi.jpg");
   holeImg = loadImage("hole.png");
   startingPointImg = loadImage("starting-point.png");
   submitImg = loadImage("submit.png");
@@ -176,7 +176,7 @@ void draw() {
   timeCounter++;
   
   // draw main background
-  if (currentLevel == 7) image(ground5Img, width/2, height/2);
+  if (currentLevel == 7) image(groundEmmiImg, width/2, height/2);
   else image(groundImg, width/2, height/2);
 
 
@@ -249,21 +249,20 @@ void draw() {
         balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
       }
       
-      if (currentLevel == 7 && dist(ballPos.x, ballPos.y, 50, 273) < 145) {
-        float force = 0.03;
-        Vec2 impulse =  new Vec2(1, -.5);
+      if (currentLevel == 7 && dist(ballPos.x, ballPos.y, 322, 393) < 65) {
+        float force = 0.03 * dist(ballPos.x, ballPos.y, 322, 393) / 65;
+        Vec2 impulse =  new Vec2((ballPos.x-322), (ballPos.y-393));
         impulse.normalize();
         impulse = impulse.mul(force);
         balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
       }
-      if (currentLevel == 7 && dist(ballPos.x, ballPos.y, 474, 465) < 145) {
-        float force = 0.07;
-        Vec2 impulse =  new Vec2(-1, -0.2);
+      if (currentLevel == 7 && dist(ballPos.x, ballPos.y, 163, 525) < 65) {
+        float force = 0.07 * dist(ballPos.x, ballPos.y, 163, 525) / 65;
+        Vec2 impulse =  new Vec2((ballPos.x-163), (ballPos.y-525));
         impulse.normalize();
         impulse = impulse.mul(force);
         balls[i].applyImpulse(impulse, balls[i].getWorldCenter());
       }
-
 
       // ball drops in hole
       if (dist(ballPos.x, ballPos.y, hole.x, hole.y) <= holeRadius * .7  && speed <= 4.5) {
@@ -589,7 +588,7 @@ void buildLevel() {
     buildPolygonBody(zeroShape);
   }
 
-  resetBall();  
+  if (currentLevel != 10) resetBall();  
 }
 
 
