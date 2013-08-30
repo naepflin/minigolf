@@ -73,6 +73,10 @@ float pmouseXTr;
 float pmouseYTr;
 
 
+
+float[] simulatorArray;
+String simulatorData = "a:136:{i:0;i:185;i:1;d:-0.08;i:2;d:-1.1600000000000001;i:3;i:1;i:4;i:333;i:5;d:0.12000000000000001;i:6;d:-0.9199999999999999;i:7;i:1;i:8;i:515;i:9;i:0;i:10;d:-1.6400000000000001;i:11;i:2;i:12;i:812;i:13;i:0;i:14;d:-0.4;i:15;i:2;i:16;i:951;i:17;d:-2.04;i:18;d:1.32;i:19;i:3;i:20;i:1092;i:21;d:-1.4400000000000002;i:22;d:0.9199999999999999;i:23;i:3;i:24;i:1189;i:25;i:0;i:26;d:0.8400000000000001;i:27;i:3;i:28;i:1260;i:29;d:0.2;i:30;i:0;i:31;i:3;i:32;i:1348;i:33;d:0.8400000000000001;i:34;d:1.4000000000000001;i:35;i:3;i:36;i:1452;i:37;i:0;i:38;d:1.04;i:39;i:3;i:40;i:1523;i:41;d:0.8;i:42;i:1;i:43;i:3;i:44;i:1739;i:45;i:0;i:46;d:-1.96;i:47;i:4;i:48;i:1913;i:49;d:0.88;i:50;i:-1;i:51;i:5;i:52;i:2095;i:53;d:-1.4400000000000002;i:54;d:-0.48000000000000004;i:55;i:5;i:56;i:2417;i:57;i:0;i:58;d:-1.1199999999999999;i:59;i:6;i:60;i:2579;i:61;d:0.08;i:62;d:-1.1600000000000001;i:63;i:6;i:64;i:2833;i:65;d:0.7200000000000001;i:66;i:0;i:67;i:6;i:68;i:3008;i:69;d:0.48000000000000004;i:70;d:0.16;i:71;i:6;i:72;i:3252;i:73;d:-0.2;i:74;d:-1.28;i:75;i:7;i:76;i:3482;i:77;i:0;i:78;i:-1;i:79;i:7;i:80;i:3685;i:81;d:1.04;i:82;d:-0.27999999999999997;i:83;i:7;i:84;i:3906;i:85;d:-0.52;i:86;i:0;i:87;i:7;i:88;i:4021;i:89;d:0.7200000000000001;i:90;d:0.16;i:91;i:7;i:92;i:4229;i:93;d:-0.2;i:94;i:0;i:95;i:7;i:96;i:4558;i:97;d:-0.36000000000000004;i:98;i:0;i:99;i:7;i:100;i:4681;i:101;d:0.08;i:102;d:0.6;i:103;i:7;i:104;i:4897;i:105;d:1.1199999999999999;i:106;d:0.24000000000000002;i:107;i:8;i:108;i:5022;i:109;d:2.3200000000000003;i:110;d:-0.32;i:111;i:8;i:112;i:5188;i:113;d:-1.08;i:114;d:-0.36000000000000004;i:115;i:8;i:116;i:5374;i:117;i:0;i:118;d:-1.2400000000000002;i:119;i:8;i:120;i:5524;i:121;d:1.28;i:122;d:0.16;i:123;i:8;i:124;i:5774;i:125;d:-2.64;i:126;d:-0.12000000000000001;i:127;i:9;i:128;i:5996;i:129;d:0.44;i:130;d:0.52;i:131;i:9;i:132;i:6161;i:133;d:0.27999999999999997;i:134;d:-0.48000000000000004;i:135;i:9;}";
+
 // this is used to remember that the user 
 // has triggered the audio on iOS... see mousePressed below
 boolean userHasTriggeredAudio = false;
@@ -91,6 +95,9 @@ void setup() {
   size(520, 800);
   //size (window.innerWidth, window.innerHeight);
   //size(520, 500);
+  
+  simulatorArray = unserialize(simulatorData);
+  println(simulatorArray);
   
   OnResizeDocument();
   
@@ -175,6 +182,9 @@ void draw() {
   mouseYTr = heightRatio * mouseY;
   pmouseYTr = heightRatio * pmouseY;
     
+    
+  simulate(); 
+  
   timeCounter++;
   
   // draw main background
@@ -389,7 +399,16 @@ void draw() {
   }
 }
 
-
+void simulate() {
+  if(simulatorArray[0] == timeCounter) {
+  Vec2 impulse = new Vec2(simulatorArray[1], simulatorArray[2]);
+    if (currentLevel != simulatorArray[3]) startNextLevel();
+    balls[0].applyImpulse(impulse, balls[0].getWorldCenter());
+    simulatorArray = reverse(shorten(shorten(shorten(shorten(reverse(simulatorArray))))));
+    println(currentLevel);
+    println(simulatorArray);
+  }
+}
 
 void drawLevel() {
   
