@@ -42,6 +42,7 @@ PImage gleisImg;
 PImage eichhoernchenImg;
 PImage eichhofImg;
 PImage emmiImg;
+PImage pilatusImg;
 
 PVector [] mouseVecHistory;
 PVector mouseVec;
@@ -131,6 +132,7 @@ void setup() {
   eichhoernchenImg = loadImage("eichhoernchen.png");
   eichhofImg = loadImage("eichhof.png");
   emmiImg = loadImage("emmi.png");
+  pilatusImg = loadImage("pilatus.png");
   
   mouseVecHistory = new PVector[5];
   for (int i=0;i<mouseVecHistory.length;i++)
@@ -445,7 +447,8 @@ void drawLevel() {
   if (currentLevel == 5) {
     fill(255);
     stroke(255);
-    drawPolygon(pilatus);
+    image(pilatusImg,262, 588);
+    //drawPolygon(pilatus);
   }
   if (currentLevel == 6) {
     fill(255);
