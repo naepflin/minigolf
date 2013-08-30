@@ -407,6 +407,7 @@ void simulate() {
     }
     Vec2 impulse = new Vec2(simulatorArray[1], simulatorArray[2]);
     balls[0].applyImpulse(impulse, balls[0].getWorldCenter());
+    counter++;
     hitSound.cue(0);
     hitSound.volume(impulse.Length());
     hitSound.play();
