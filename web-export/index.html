@@ -65,6 +65,21 @@
 				document.getElementById('Minigolf').style.width = '520px';
 			}
 	  }
+	  
+	  
+	  function promptSimulatorData()
+	  {
+	  var x;
+
+	  var person=prompt("Please enter your name","Harry Potter");
+
+	  if (person!=null)
+	    {
+	    x="Hello " + person + "! How are you today?";
+	    document.getElementById("demo").innerHTML=x;
+	    }
+	  }
+	  
  
 	  </script>
 
@@ -90,7 +105,7 @@ function getProcessingSketchId () { return 'Minigolf'; }
 		<div id="content">
 			<div>
 				<canvas id="Minigolf" data-processing-sources="Minigolf.pde" 
-						width="520" height="800" onload="OnResizeDocument()">
+						width="520" height="800" onload="OnResizeDocument();promptSimulatorData();">
 					<p>Your browser does not support the canvas tag.</p>
 					<!-- Note: you can put any alternative content here. -->
 				</canvas>
